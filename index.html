@@ -994,12 +994,83 @@
         <!-- ========== DYNAMIC SECTION ========== -->
         <div id="dynamic-section" class="content-section">
             <div style="padding: 12px; margin-top: 12px;">
-                <div class="section-title">📈 Графики</div>
-                <div class="chart-container">
-                    <canvas id="revenueChart"></canvas>
+                <div class="section-title">📈 Аналитика</div>
+
+                <!-- ===== ФИЛЬТРЫ И ДЕЙСТВИЯ ===== -->
+                <div style="display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 8px;">
+                    <select id="dynamicPeriodSelect" onchange="updateDynamicChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        <option value="month">📅 За месяц</option>
+                        <option value="quarter">📅 За квартал</option>
+                        <option value="year">📅 За год</option>
+                    </select>
+                    <button onclick="toggleDynamicComparison()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">🔄 Сравнить</button>
+                    <button onclick="exportDynamicData()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">💾 Экспорт</button>
                 </div>
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
+
+                <!-- ===== KPI МЕТРИКИ ===== -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Среднее</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 4px;" id="dynamicAvg">2.3M</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">сум</div>
+                    </div>
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Максимум</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--success); margin-bottom: 4px;" id="dynamicMax">2.8M</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">сум</div>
+                    </div>
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Прирост</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--warning); margin-bottom: 4px;" id="dynamicGrowth">+15%</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">⬆️</div>
+                    </div>
+                </div>
+
+                <!-- ===== ОСНОВНОЙ ГРАФИК ===== -->
+                <div style="display: grid; grid-template-columns: 1fr 200px; gap: 12px; margin-bottom: 12px;">
+                    <!-- График -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 350px;">
+                        <canvas id="dynamicMainChart"></canvas>
+                    </div>
+
+                    <!-- Боковая панель со списком проектов -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px; overflow-y: auto; max-height: 350px;">
+                        <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; padding: 0 4px;">Проекты</div>
+                        <div id="dynamicProjectsList">
+                            <!-- Projects list will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ВЫБОР ПРОЕКТА ДЛЯ ПОДРОБНОГО АНАЛИЗА ===== -->
+                <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; margin-bottom: 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">Подробный анализ проекта</div>
+                    <select id="dynamicProjectSelect" onchange="updateDynamicProjectDetails()" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
+                        <option value="">Выберите проект...</option>
+                    </select>
+                    <div id="dynamicProjectDetails" style="display: none; padding: 12px; background: var(--bg-secondary); border-radius: 10px;">
+                        <!-- Project details will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- ===== ТАБЛИЦА ДАННЫХ ===== -->
+                <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">Таблица данных</div>
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table id="dynamicDataTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="padding: 8px; text-align: left; font-weight: 800; color: var(--text-secondary);">Период</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">Доход</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">План</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamicTableBody">
+                                <!-- Table rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1289,8 +1360,8 @@
                     initializeDetailSection();
                 }
 
-                if (sectionName === 'dynamic' && !window.chartsInitialized) {
-                    setTimeout(initCharts, 100);
+                if (sectionName === 'dynamic') {
+                    setTimeout(window.initDynamicOnOpen, 100);
                 }
             }
 
@@ -1365,6 +1436,419 @@
                 }
             });
         }
+
+        // ===== DYNAMIC SECTION FUNCTIONS (Графики - ВАРИАНТ 3) =====
+        
+        const dynamicData = {
+            monthData: { labels: ['янв', 'фев', 'мар'], values: [2.1, 2.4, 2.8] },
+            quarterData: { labels: ['кв1', 'кв2', 'кв3', 'кв4'], values: [2.4, 2.5, 2.3, 2.2] },
+            yearData: { labels: ['2023', '2024', '2025', '2026'], values: [2.0, 2.1, 2.3, 2.4] },
+            projects: [
+                { name: 'KRKA', percent: 105, fact: '98.8M', status: 'completed' },
+                { name: 'Astra', percent: 107, fact: '122M', status: 'completed' },
+                { name: 'SENTISS', percent: 103, fact: '30M', status: 'completed' },
+                { name: 'Medexport', percent: 86, fact: '60.8M', status: 'partial' },
+                { name: 'SYNERGY', percent: 65, fact: '94.6M', status: 'partial' },
+                { name: 'SAFE', percent: 0, fact: '0M', status: 'critical' }
+            ]
+        };
+
+        let dynamicChart = null;
+        let dynamicCurrentPeriod = 'month';
+
+        function initDynamicSection() {
+            updateDynamicChart();
+            populateDynamicProjectsList();
+            populateDynamicProjectSelect();
+            renderDynamicTable();
+        }
+
+        function updateDynamicChart() {
+            dynamicCurrentPeriod = document.getElementById('dynamicPeriodSelect').value;
+            const data = dynamicData[dynamicCurrentPeriod + 'Data'];
+            
+            if (!data) return;
+
+            // Обновить KPI метрики
+            const avg = (data.values.reduce((a, b) => a + b) / data.values.length).toFixed(1);
+            const max = Math.max(...data.values);
+            const min = Math.min(...data.values);
+            const growth = (((max - min) / min) * 100).toFixed(0);
+
+            const avgEl = document.getElementById('dynamicAvg');
+            const maxEl = document.getElementById('dynamicMax');
+            const growthEl = document.getElementById('dynamicGrowth');
+
+            if (avgEl) avgEl.textContent = avg + 'M';
+            if (maxEl) maxEl.textContent = max + 'M';
+            if (growthEl) growthEl.textContent = '+' + growth + '%';
+
+            // Уничтожить старый график если существует
+            if (dynamicChart) {
+                try {
+                    dynamicChart.destroy();
+                } catch (e) {
+                    console.log('Chart destroy error:', e);
+                }
+                dynamicChart = null;
+            }
+
+            // Создать новый график
+            try {
+                const canvas = document.getElementById('dynamicMainChart');
+                if (!canvas) {
+                    console.log('Canvas element not found');
+                    return;
+                }
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.log('Canvas context not available');
+                    return;
+                }
+
+                dynamicChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Доход (млн сум)',
+                            data: data.values,
+                            borderColor: '#1e7a34',
+                            backgroundColor: 'rgba(30, 122, 52, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#1e7a34',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { 
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { weight: 'bold', size: 14 },
+                                bodyFont: { size: 12 }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { color: '#f1f5f9', drawBorder: false } 
+                            },
+                            x: { 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { display: false, drawBorder: false } 
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Chart creation error:', error);
+            }
+        }
+
+        function populateDynamicProjectsList() {
+            const list = document.getElementById('dynamicProjectsList');
+            list.innerHTML = dynamicData.projects.map(proj => {
+                let color = '#10b981';
+                let emoji = '✅';
+                if (proj.status === 'partial') {
+                    color = '#f59e0b';
+                    emoji = '⚠️';
+                } else if (proj.status === 'critical') {
+                    color = '#ef4444';
+                    emoji = '🔴';
+                }
+                return `
+                    <div style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+                        <div style="font-weight: 600; color: #0f172a; font-size: 11px; margin-bottom: 3px;">${emoji} ${proj.name}</div>
+                        <div style="font-size: 12px; font-weight: 800; color: ${color};">${proj.percent}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function populateDynamicProjectSelect() {
+            const select = document.getElementById('dynamicProjectSelect');
+            select.innerHTML = '<option value="">Выберите проект...</option>' + 
+                dynamicData.projects.map(proj => `<option value="${proj.name}">${proj.name}</option>`).join('');
+        }
+
+        function updateDynamicProjectDetails() {
+            const select = document.getElementById('dynamicProjectSelect');
+            const projectName = select.value;
+            const detailsDiv = document.getElementById('dynamicProjectDetails');
+
+            if (!projectName) {
+                detailsDiv.style.display = 'none';
+                return;
+            }
+
+            const project = dynamicData.projects.find(p => p.name === projectName);
+            if (project) {
+                detailsDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Проект</div>
+                            <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${project.name}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Статус</div>
+                            <div style="font-size: 16px; font-weight: 800; color: ${project.percent >= 100 ? '#10b981' : '#f59e0b'};">${project.percent}%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Факт</div>
+                            <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${project.fact}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Статус</div>
+                            <div style="font-size: 13px; font-weight: 700; color: ${project.status === 'completed' ? '#10b981' : project.status === 'partial' ? '#f59e0b' : '#ef4444'};">
+                                ${project.status === 'completed' ? '✅ Выполнено' : project.status === 'partial' ? '⚠️ Частично' : '🔴 Критично'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                detailsDiv.style.display = 'block';
+            }
+        }
+
+        function renderDynamicTable() {
+            const tbody = document.getElementById('dynamicTableBody');
+            const period = dynamicCurrentPeriod;
+            const data = dynamicData[period + 'Data'];
+            
+            tbody.innerHTML = data.labels.map((label, idx) => {
+                const value = data.values[idx];
+                const percent = Math.round((value / 2.5) * 100);
+                return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 8px; color: #0f172a; font-weight: 600;">${label}</td>
+                        <td style="padding: 8px; text-align: right; color: #1e7a34; font-weight: 700;">${value}M</td>
+                        <td style="padding: 8px; text-align: right; color: #475569;">2.5M</td>
+                        <td style="padding: 8px; text-align: right; font-weight: 800; color: ${percent >= 95 ? '#10b981' : percent >= 80 ? '#f59e0b' : '#ef4444'};">${percent}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleDynamicComparison() {
+            try {
+                // Проверяем есть ли уже модальное окно
+                let modal = document.getElementById('dynamicComparisonModal');
+                if (modal) {
+                    modal.remove();
+                    return;
+                }
+
+                // Создаем новое модальное окно
+                const modalHTML = `
+                    <div id="dynamicComparisonModal" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0,0,0,0.6);
+                        z-index: 9999;
+                        display: flex;
+                        align-items: flex-end;
+                        font-family: 'Inter', sans-serif;
+                    ">
+                        <div style="
+                            background: white;
+                            width: 100%;
+                            border-radius: 20px 20px 0 0;
+                            padding: 20px;
+                            max-height: 85vh;
+                            overflow-y: auto;
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="font-size: 18px; font-weight: 800;">🔄 Сравнение</div>
+                                <button onclick="document.getElementById('dynamicComparisonModal').remove()" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 700;">✕</button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                                <div>
+                                    <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Проект 1</label>
+                                    <select id="compProj1" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer;">
+                                        <option value="">Выберите...</option>
+                                        ${dynamicData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Проект 2</label>
+                                    <select id="compProj2" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer;">
+                                        <option value="">Выберите...</option>
+                                        ${dynamicData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button onclick="window.performDynamicComparison()" style="width: 100%; padding: 12px; background: #1e7a34; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 12px;">
+                                📊 Сравнить проекты
+                            </button>
+
+                            <div id="comparisonResultsArea" style="display: none; background: #f8fafc; border-radius: 10px; padding: 14px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+                                <!-- Результаты -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Закрытие при клике на фон
+                document.getElementById('dynamicComparisonModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.remove();
+                    }
+                });
+
+            } catch (error) {
+                console.error('Comparison error:', error);
+                alert('❌ Ошибка при открытии сравнения');
+            }
+        }
+
+        window.performDynamicComparison = function() {
+            try {
+                const p1 = document.getElementById('compProj1').value;
+                const p2 = document.getElementById('compProj2').value;
+
+                if (!p1 || !p2) {
+                    alert('⚠️ Выберите оба проекта');
+                    return;
+                }
+
+                if (p1 === p2) {
+                    alert('⚠️ Выберите разные проекты');
+                    return;
+                }
+
+                const proj1 = dynamicData.projects.find(p => p.name === p1);
+                const proj2 = dynamicData.projects.find(p => p.name === p2);
+
+                if (!proj1 || !proj2) {
+                    alert('❌ Проект не найден');
+                    return;
+                }
+
+                const diff = proj1.percent - proj2.percent;
+                const winner = diff > 0 ? proj1.name : proj2.name;
+                const absDiff = Math.abs(diff);
+
+                const color1 = proj1.percent >= 100 ? '#10b981' : proj1.percent >= 50 ? '#f59e0b' : '#ef4444';
+                const color2 = proj2.percent >= 100 ? '#10b981' : proj2.percent >= 50 ? '#f59e0b' : '#ef4444';
+
+                const html = `
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 10px;">Результаты</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${color1};">
+                                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px; font-size: 13px;">${proj1.name}</div>
+                                <div style="font-size: 22px; font-weight: 800; color: ${color1};">${proj1.percent}%</div>
+                                <div style="font-size: 10px; color: #475569; margin-top: 4px;">${proj1.fact}</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${color2};">
+                                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px; font-size: 13px;">${proj2.name}</div>
+                                <div style="font-size: 22px; font-weight: 800; color: ${color2};">${proj2.percent}%</div>
+                                <div style="font-size: 10px; color: #475569; margin-top: 4px;">${proj2.fact}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #1e7a34;">
+                        <div style="font-size: 11px; font-weight: 700; color: #1e7a34; text-transform: uppercase; margin-bottom: 6px;">🏆 Победитель</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">${winner}</div>
+                        <div style="font-size: 12px; color: #475569;">Впереди на <strong>${absDiff}%</strong></div>
+                    </div>
+                `;
+
+                document.getElementById('comparisonResultsArea').innerHTML = html;
+                document.getElementById('comparisonResultsArea').style.display = 'block';
+
+            } catch (error) {
+                console.error('Perform comparison error:', error);
+                alert('❌ Ошибка при сравнении');
+            }
+        };
+
+        function exportDynamicData() {
+            try {
+                const period = dynamicCurrentPeriod;
+                const periodName = { 'month': 'месяц', 'quarter': 'квартал', 'year': 'год' }[period];
+                const data = dynamicData[period + 'Data'];
+                
+                if (!data) {
+                    alert('⚠️ Нет данных для экспорта');
+                    return;
+                }
+
+                // Создаем CSV
+                let csv = 'Период,Доход (млн сум),План,Процент\n';
+                data.labels.forEach((label, idx) => {
+                    const value = data.values[idx];
+                    const percent = Math.round((value / 2.5) * 100);
+                    csv += `${label},${value},2.5,${percent}%\n`;
+                });
+
+                // Правильное создание Blob для скачивания
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `analytics_${period}_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Освобождаем URL
+                URL.revokeObjectURL(url);
+                
+                alert(`✅ Файл экспортирован!\n\nПериод: ${periodName}\nФайл: analytics_${period}.csv`);
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('❌ Ошибка при экспорте:\n' + error.message);
+            }
+        }
+
+        // Инициализация при открытии раздела Графики
+        window.initDynamicOnOpen = function() {
+            try {
+                if (document.getElementById('dynamicMainChart')) {
+                    setTimeout(() => {
+                        populateDynamicProjectsList();
+                        populateDynamicProjectSelect();
+                        renderDynamicTable();
+                        updateDynamicChart();
+                    }, 200);
+                }
+            } catch (e) {
+                console.error('Dynamic section init error:', e);
+            }
+        };
+
+        // Также вызываем при загрузке
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (document.getElementById('dynamicMainChart')) {
+                    window.initDynamicOnOpen();
+                }
+            }, 500);
+        });
     </script>
 </body>
 </html>
