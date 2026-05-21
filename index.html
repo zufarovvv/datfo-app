@@ -1892,6 +1892,9 @@
                 tabAnalytics.style.borderBottom = '3px solid var(--primary)';
                 tabTrend.style.color = 'var(--text-secondary)';
                 tabTrend.style.borderBottom = '3px solid transparent';
+                
+                // Очистить тренд при переключении
+                clearTrendData();
             } else if (tab === 'trend') {
                 analyticsView.style.display = 'none';
                 trendView.style.display = 'block';
@@ -1907,6 +1910,24 @@
                         updateTrendChart();
                     }
                 }, 100);
+            }
+        }
+
+        // Очистить данные тренда (вернуть в начальное состояние)
+        function clearTrendData() {
+            try {
+                if (trendChart !== null) {
+                    trendChart.destroy();
+                    trendChart = null;
+                }
+                
+                document.getElementById('trendCurrentValue').textContent = '—';
+                document.getElementById('trendCurrentDate').textContent = 'Дата';
+                document.getElementById('trendIndicator').textContent = '—';
+                document.getElementById('trendDescription').textContent = 'Нет данных';
+                document.getElementById('trendTableBody').innerHTML = '';
+            } catch (e) {
+                console.error('Clear trend error:', e);
             }
         }
 
@@ -1931,7 +1952,7 @@
                 trendCurrentPeriod = period;
 
                 if (!projectName) {
-                    alert('⚠️ Выберите проект');
+                    clearTrendData();
                     return;
                 }
 
