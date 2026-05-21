@@ -1026,17 +1026,17 @@
                     </div>
                 </div>
 
-                <!-- ===== ОСНОВНОЙ ГРАФИК ===== -->
-                <div style="display: grid; grid-template-columns: 1fr 200px; gap: 12px; margin-bottom: 12px;">
-                    <!-- График -->
-                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 350px;">
+                <!-- ===== ОСНОВНОЙ ГРАФИК И ПРОЕКТЫ (АДАПТИВНО) ===== -->
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px;">
+                    <!-- График (полная ширина) -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 300px;">
                         <canvas id="dynamicMainChart"></canvas>
                     </div>
 
-                    <!-- Боковая панель со списком проектов -->
-                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px; overflow-y: auto; max-height: 350px;">
-                        <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; padding: 0 4px;">Проекты</div>
-                        <div id="dynamicProjectsList">
+                    <!-- Боковая панель со списком проектов (полная ширина на мобиле) -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px;">
+                        <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; padding: 0 4px;">📊 Проекты</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px;" id="dynamicProjectsList">
                             <!-- Projects list will be inserted here -->
                         </div>
                     </div>
@@ -1571,9 +1571,18 @@
                     emoji = '🔴';
                 }
                 return `
-                    <div style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
-                        <div style="font-weight: 600; color: #0f172a; font-size: 11px; margin-bottom: 3px;">${emoji} ${proj.name}</div>
-                        <div style="font-size: 12px; font-weight: 800; color: ${color};">${proj.percent}%</div>
+                    <div style="
+                        background: linear-gradient(135deg, ${color}15 0%, ${color}05 100%);
+                        border: 1px solid ${color}30;
+                        border-radius: 10px;
+                        padding: 10px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='${color}'" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='${color}30'">
+                        <div style="font-size: 18px; margin-bottom: 4px;">${emoji}</div>
+                        <div style="font-weight: 700; color: #0f172a; font-size: 11px; margin-bottom: 4px; word-break: break-word;">${proj.name}</div>
+                        <div style="font-size: 14px; font-weight: 800; color: ${color};">${proj.percent}%</div>
                     </div>
                 `;
             }).join('');
