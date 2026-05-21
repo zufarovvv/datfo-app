@@ -48,6 +48,7 @@
             font-size: 16px;
             line-height: 1.5;
             overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
         /* ============= HEADER ============= */
@@ -79,7 +80,7 @@
             border-radius: 12px;
         }
 
-        /* ============= MAIN CONTAINER ============= */
+        /* ============= CONTAINER ============= */
         .container {
             width: 100%;
             max-width: 100%;
@@ -87,7 +88,7 @@
             margin: 0;
         }
 
-        /* ============= PHARMACY INFO CARD ============= */
+        /* ============= PHARMACY INFO ============= */
         .pharmacy-card {
             background: var(--surface);
             margin: 12px 12px 0 12px;
@@ -307,7 +308,7 @@
             color: var(--text-secondary);
         }
 
-        /* ============= BONUS BLOCKS ============= */
+        /* ============= BONUS SECTION ============= */
         .bonus-section {
             margin: 16px 12px 0 12px;
         }
@@ -378,13 +379,147 @@
             font-weight: 500;
         }
 
-        /* ============= SECTIONS CONTENT ============= */
+        /* ============= SECTIONS ============= */
         .content-section {
             display: none;
         }
 
         .content-section.active {
             display: block;
+        }
+
+        /* ============= SEARCH AND FILTERS ============= */
+        .search-section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin: 12px 12px 0 12px;
+            padding: 14px;
+        }
+
+        .search-box {
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(30, 122, 52, 0.1);
+        }
+
+        .filters-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-range {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-range input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .filter-range input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-range input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-range-value {
+            min-width: 45px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .search-results {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .search-results.active {
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* ============= TABLE ============= */
@@ -413,103 +548,6 @@
 
         .table tr:hover {
             background: var(--bg-primary);
-        }
-
-        /* ============= CHART ============= */
-        .chart-container {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            margin: 12px 12px 0 12px;
-            padding: 16px;
-            height: 300px;
-        }
-
-        /* ============= TASK LIST ============= */
-        .task-item {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 16px;
-            margin: 0 12px 12px 12px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .task-icon {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .task-content h4 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-        }
-
-        .task-content p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* ============= BOTTOM NAVIGATION ============= */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 8px;
-            display: flex;
-            gap: 4px;
-            z-index: 200;
-            overflow-x: auto;
-            padding-bottom: max(8px, env(safe-area-inset-bottom));
-        }
-
-        .nav-btn {
-            flex: 1;
-            min-width: 90px;
-            padding: 12px 8px;
-            border: none;
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-        }
-
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .nav-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* ============= PADDING FOR BOTTOM NAV ============= */
-        body {
-            padding-bottom: 80px;
-        }
-
-        /* ============= SUCCESS/WARNING/DANGER COLORS ============= */
-        .success-badge {
-            color: var(--success);
-        }
-
-        .warning-badge {
-            color: var(--warning);
-        }
-
-        .danger-badge {
-            color: var(--danger);
         }
 
         /* ============= MODAL ============= */
@@ -614,6 +652,137 @@
             font-weight: 800;
             line-height: 1;
         }
+
+        /* ============= CHART ============= */
+        .chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin: 12px 12px 0 12px;
+            padding: 16px;
+            height: 300px;
+        }
+
+        /* ============= TASKS ============= */
+        .task-item {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin: 0 12px 12px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .task-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .task-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .task-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============= BOTTOM NAVIGATION ============= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            z-index: 200;
+            overflow-x: auto;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 12px 8px;
+            border: none;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ============= NO RESULTS ============= */
+        .no-results {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .no-results-text {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .no-results-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ============= FOOTER ============= */
+        .footer {
+            text-align: center;
+            padding: 20px 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ============= COLORS ============= */
+        .success-badge {
+            color: var(--success);
+        }
+
+        .warning-badge {
+            color: var(--warning);
+        }
+
+        .danger-badge {
+            color: var(--danger);
+        }
     </style>
 </head>
 <body>
@@ -623,30 +792,36 @@
         <div class="header-status">🟢 Актуально</div>
     </div>
 
+    <!-- MODAL -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Выполнено</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
     <!-- MAIN CONTENT -->
     <div class="container">
-        <!-- ========== DASHBOARD SECTION (DEFAULT) ========== -->
+        <!-- ========== DASHBOARD SECTION ========== -->
         <div id="dashboard-section" class="content-section active">
-            <!-- PHARMACY INFO -->
             <div class="pharmacy-card">
                 <div class="pharmacy-logo">DATFO</div>
                 <div class="pharmacy-info">
                     <div class="pharmacy-name">"TARGET PHARM" МСН</div>
-                    <div class="pharmacy-details">
-                        Ташкент
-                    </div>
+                    <div class="pharmacy-details">Ташкент</div>
                     <div class="pharmacy-inn">ИНН: 305176332</div>
                 </div>
             </div>
 
-            <!-- INCOME -->
             <div class="income-block">
                 <div class="income-label">💰 Доход за квартал</div>
                 <div class="income-amount">7.0M</div>
                 <div class="income-sublabel">сум</div>
             </div>
 
-            <!-- STATISTICS -->
             <div class="stats-grid">
                 <div class="stat-box" onclick="showDetails('completed')">
                     <div class="stat-number success-badge">3</div>
@@ -665,7 +840,6 @@
                 </div>
             </div>
 
-            <!-- MONTHLY BLOCKS -->
             <div class="months-section">
                 <div class="section-title">📅 По месяцам</div>
                 <div class="months-grid">
@@ -680,7 +854,7 @@
                                 <div class="month-stat-label">План</div>
                                 <div class="month-stat-value">80.0M</div>
                             </div>
-                            <div class="progress-bar"><div class="progress-fill warning-badge" style="background: var(--warning); width: 81%;"></div></div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--warning); width: 81%;"></div></div>
                             <div class="month-percent">81%</div>
                         </div>
                     </div>
@@ -717,7 +891,6 @@
                 </div>
             </div>
 
-            <!-- BONUSES -->
             <div class="bonus-section">
                 <div class="section-title">🎁 Бонусы</div>
                 <div class="bonus-grid">
@@ -751,37 +924,74 @@
 
         <!-- ========== DETAIL SECTION ========== -->
         <div id="detail-section" class="content-section">
-            <div style="padding: 12px; margin-top: 12px;">
-                <div class="section-title">📋 Все проекты</div>
-                <div style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
-                    <table class="table">
+            <div style="padding: 0; margin-top: 12px;">
+                <div style="padding: 12px 12px 0 12px;"><div class="section-title">📋 Все проекты</div></div>
+                
+                <div class="search-section">
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="projectSearch" 
+                            placeholder="🔍 Найти проект (KRKA, Astra...)"
+                            onkeyup="filterProjects()"
+                        >
+                    </div>
+
+                    <div class="filters-group">
+                        <div>
+                            <div class="filter-label">📊 По статусу</div>
+                            <div class="filter-options">
+                                <button class="filter-btn active" onclick="setStatusFilter('all')" data-filter="all">Все</button>
+                                <button class="filter-btn" onclick="setStatusFilter('completed')" data-filter="completed">✅ Выполнено</button>
+                                <button class="filter-btn" onclick="setStatusFilter('partial')" data-filter="partial">⚠️ Частично</button>
+                                <button class="filter-btn" onclick="setStatusFilter('critical')" data-filter="critical">🔴 Критично</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="filter-label">📈 Минимум выполнения</div>
+                            <div class="filter-range">
+                                <input 
+                                    type="range" 
+                                    id="percentFilter" 
+                                    min="0" 
+                                    max="120" 
+                                    value="0" 
+                                    onchange="filterProjects()"
+                                    oninput="updatePercentValue()"
+                                >
+                                <div class="filter-range-value" id="percentValue">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+
+                <div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; border: 1px solid var(--border); border-top: none; margin: 0 12px;">
+                    <table class="table" id="projectsTable">
                         <thead>
                             <tr>
                                 <th>Проект</th>
                                 <th>Факт</th>
-                                <th>%</th>
+                                <th style="text-align: right;">%</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr><td>KRKA</td><td>98.8M</td><td style="color: var(--success); font-weight: 800;">105%</td></tr>
-                            <tr><td>Astra Zeneca</td><td>122M</td><td style="color: var(--success); font-weight: 800;">107%</td></tr>
-                            <tr><td>SENTISS</td><td>30M</td><td style="color: var(--success); font-weight: 800;">103%</td></tr>
-                            <tr><td>Medexport</td><td>60.8M</td><td style="color: var(--warning); font-weight: 800;">86%</td></tr>
-                            <tr><td>SYNERGY</td><td>94.6M</td><td style="color: var(--warning); font-weight: 800;">65%</td></tr>
-                            <tr><td>ZOMMER</td><td>65.6M</td><td style="color: var(--warning); font-weight: 800;">66%</td></tr>
-                            <tr><td>Alpen Pharma</td><td>17M</td><td style="color: var(--warning); font-weight: 800;">60%</td></tr>
-                            <tr><td>CCL</td><td>29M</td><td style="color: var(--warning); font-weight: 800;">52%</td></tr>
-                            <tr><td>BIOMIND</td><td>17.2M</td><td style="color: var(--warning); font-weight: 800;">57%</td></tr>
-                            <tr><td>POLISORB</td><td>43.8M</td><td style="color: var(--warning); font-weight: 800;">50%</td></tr>
-                            <tr><td>SAFE</td><td>0M</td><td style="color: var(--danger); font-weight: 800;">0%</td></tr>
-                            <tr><td>SIRIUS</td><td>9.2M</td><td style="color: var(--danger); font-weight: 800;">27%</td></tr>
+                        <tbody id="projectsTableBody">
                         </tbody>
                     </table>
+                </div>
+
+                <div class="no-results" id="noResults" style="display: none; margin: 0 12px;">
+                    <div class="no-results-icon">😔</div>
+                    <div class="no-results-text">Проектов не найдено</div>
+                    <div class="no-results-hint">Попробуйте другие параметры фильтра</div>
                 </div>
             </div>
         </div>
 
-        <!-- ========== DYNAMICS SECTION ========== -->
+        <!-- ========== DYNAMIC SECTION ========== -->
         <div id="dynamic-section" class="content-section">
             <div style="padding: 12px; margin-top: 12px;">
                 <div class="section-title">📈 Графики</div>
@@ -867,20 +1077,7 @@
             <div class="footer-divider"></div>
             <div>© 2026 DATFO Dashboard</div>
             <div>Обновлено: сегодня 14:32</div>
-            <div>v2.3.0</div>
-        </div>
-    </div>
-
-    <!-- MODAL WINDOW -->
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">Выполнено</div>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Projects list will be inserted here -->
-            </div>
+            <div>v3.0.0 - С поиском и фильтрами</div>
         </div>
     </div>
 
@@ -894,7 +1091,112 @@
     </div>
 
     <script>
-        // ========== DATA ==========
+        // ========== PROJECT DATA ==========
+        const allProjects = [
+            { name: 'KRKA', fact: '98.8M', percent: 105, status: 'completed' },
+            { name: 'Astra Zeneca', fact: '122M', percent: 107, status: 'completed' },
+            { name: 'SENTISS', fact: '30M', percent: 103, status: 'completed' },
+            { name: 'Medexport', fact: '60.8M', percent: 86, status: 'partial' },
+            { name: 'SYNERGY', fact: '94.6M', percent: 65, status: 'partial' },
+            { name: 'ZOMMER', fact: '65.6M', percent: 66, status: 'partial' },
+            { name: 'Alpen Pharma', fact: '17M', percent: 60, status: 'partial' },
+            { name: 'CCL', fact: '29M', percent: 52, status: 'partial' },
+            { name: 'BIOMIND', fact: '17.2M', percent: 57, status: 'partial' },
+            { name: 'POLISORB', fact: '43.8M', percent: 50, status: 'partial' },
+            { name: 'SAFE', fact: '0M', percent: 0, status: 'critical' },
+            { name: 'SIRIUS', fact: '9.2M', percent: 27, status: 'critical' }
+        ];
+
+        let currentStatusFilter = 'all';
+        let currentPercentFilter = 0;
+
+        // ========== FILTER FUNCTIONS ==========
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+            
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${status}"]`).classList.add('active');
+            
+            filterProjects();
+        }
+
+        function updatePercentValue() {
+            const value = document.getElementById('percentFilter').value;
+            document.getElementById('percentValue').textContent = value + '%';
+        }
+
+        function filterProjects() {
+            const searchTerm = document.getElementById('projectSearch').value.toLowerCase();
+            const percentFilter = parseInt(document.getElementById('percentFilter').value);
+            currentPercentFilter = percentFilter;
+
+            let filtered = allProjects.filter(project => {
+                const matchesSearch = project.name.toLowerCase().includes(searchTerm);
+                const matchesStatus = currentStatusFilter === 'all' || project.status === currentStatusFilter;
+                const matchesPercent = project.percent >= percentFilter;
+                
+                return matchesSearch && matchesStatus && matchesPercent;
+            });
+
+            renderProjects(filtered);
+            updateResultsInfo(filtered);
+        }
+
+        function renderProjects(projects) {
+            const tbody = document.getElementById('projectsTableBody');
+            const noResults = document.getElementById('noResults');
+
+            if (projects.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            tbody.innerHTML = projects.map(project => {
+                let percentColor = 'var(--danger)';
+                if (project.percent >= 100) {
+                    percentColor = 'var(--success)';
+                } else if (project.percent >= 75) {
+                    percentColor = 'var(--warning)';
+                }
+
+                return `
+                    <tr>
+                        <td>${project.name}</td>
+                        <td>${project.fact}</td>
+                        <td style="color: ${percentColor}; font-weight: 800; text-align: right;">${project.percent}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateResultsInfo(filtered) {
+            const resultsDiv = document.getElementById('searchResults');
+            const total = allProjects.length;
+            const shown = filtered.length;
+
+            if (shown === total) {
+                resultsDiv.textContent = '';
+            } else {
+                resultsDiv.textContent = `Показано ${shown} из ${total} проектов`;
+                resultsDiv.classList.add('active');
+            }
+        }
+
+        // Initialize on detail section load
+        function initializeDetailSection() {
+            document.getElementById('projectSearch').value = '';
+            document.getElementById('percentFilter').value = '0';
+            updatePercentValue();
+            currentStatusFilter = 'all';
+            document.querySelector('[data-filter="all"]').classList.add('active');
+            filterProjects();
+        }
+
+        // ========== MODAL DATA ==========
         const projectsData = {
             completed: [
                 { name: 'KRKA', fact: '98.8M', plan: '95.8M', percent: 105 },
@@ -917,9 +1219,9 @@
         };
 
         const statusLabels = {
-            completed: { title: '✅ Выполнено', icon: '✓', color: 'var(--success)' },
-            partial: { title: '⚠️ Частично', icon: '⏳', color: 'var(--warning)' },
-            critical: { title: '🔴 Критично', icon: '❌', color: 'var(--danger)' }
+            completed: { title: '✅ Выполнено', icon: '✓' },
+            partial: { title: '⚠️ Частично', icon: '⏳' },
+            critical: { title: '🔴 Критично', icon: '❌' }
         };
 
         // ========== MODAL FUNCTIONS ==========
@@ -928,10 +1230,8 @@
             const projects = projectsData[status];
             const info = statusLabels[status];
 
-            // Update header
             document.getElementById('modalTitle').textContent = info.title;
 
-            // Generate body
             let html = '';
             projects.forEach(project => {
                 const percentColor = project.percent >= 100 ? 'var(--success)' : 
@@ -952,7 +1252,6 @@
             document.getElementById('modalBody').innerHTML = html;
             modal.classList.add('active');
 
-            // Close on background click
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
@@ -963,12 +1262,11 @@
             modal.classList.remove('active');
         }
 
-        // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
 
-        // ========== TELEGRAM WEB APP INITIALIZATION ==========
+        // ========== TELEGRAM INIT ==========
         if (window.Telegram && window.Telegram.WebApp) {
             const tg = window.Telegram.WebApp;
             tg.ready();
@@ -986,6 +1284,10 @@
             const section = document.getElementById(sectionId);
             if (section) {
                 section.classList.add('active');
+
+                if (sectionName === 'detail') {
+                    initializeDetailSection();
+                }
 
                 if (sectionName === 'dynamic' && !window.chartsInitialized) {
                     setTimeout(initCharts, 100);
