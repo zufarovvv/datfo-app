@@ -784,7 +784,7 @@
             color: var(--danger);
         }
     </style>
-</head>
+    </head>
 <body>
     <!-- HEADER -->
     <div class="header">
@@ -924,6 +924,7 @@
 
         <!-- ========== DETAIL SECTION ========== -->
         <div id="detail-section" class="content-section">
+
             <div style="padding: 0; margin-top: 12px;">
                 <div style="padding: 12px 12px 0 12px;"><div class="section-title">📋 Все проекты</div></div>
                 
@@ -993,18 +994,25 @@
 
         <!-- ========== DYNAMIC SECTION ========== -->
         <div id="dynamic-section" class="content-section">
+            <!-- ===== ВКЛАДКИ ===== -->
+            <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 2px solid var(--border); padding: 0 12px; padding-bottom: 0;">
+                <button onclick="switchDynamicTab('analytics')" id="tab-analytics" style="padding: 12px 16px; background: none; border: none; cursor: pointer; font-weight: 700; font-size: 13px; color: var(--primary); border-bottom: 3px solid var(--primary); transition: all 0.2s; margin-bottom: -2px;">📊 Аналитика</button>
+                <button onclick="switchDynamicTab('trend')" id="tab-trend" style="padding: 12px 16px; background: none; border: none; cursor: pointer; font-weight: 700; font-size: 13px; color: var(--text-secondary); border-bottom: 3px solid transparent; transition: all 0.2s; margin-bottom: -2px;">📈 Анализ тренда</button>
+            </div>
+
+            <!-- ===== РАЗДЕЛ АНАЛИТИКА ===== -->
+            <div id="analytics-view" style="display: block;">
             <div style="padding: 12px; margin-top: 12px;">
                 <div class="section-title">📈 Аналитика</div>
 
-                <!-- ===== ФИЛЬТРЫ И ДЕЙСТВИЯ ===== -->
-                <div style="display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 8px;">
+                <!-- ===== ФИЛЬТРЫ И ДЕЙСТВИЯ (НОВЫЙ ДИЗАЙН) ===== -->
+                <div style="display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 8px;">
                     <select id="dynamicPeriodSelect" onchange="updateDynamicChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">
                         <option value="month">📅 За месяц</option>
                         <option value="quarter">📅 За квартал</option>
                         <option value="year">📅 За год</option>
                     </select>
-                    <button onclick="toggleDynamicComparison()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">🔄 Сравнить</button>
-                    <button onclick="exportDynamicData()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">💾 Экспорт</button>
+                    <button onclick="toggleDynamicComparison()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">🔄 Сравнить</button>
                 </div>
 
                 <!-- ===== KPI МЕТРИКИ ===== -->
@@ -1073,10 +1081,67 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
 
-        <!-- ========== BONUS SECTION ========== -->
+            <!-- ===== РАЗДЕЛ АНАЛИЗ ТРЕНДА ===== -->
+            <div id="trend-view" style="display: none;">
+                <div style="padding: 12px; margin-top: 12px;">
+                    <div class="section-title">📈 Анализ тренда проектов</div>
+
+                    <!-- Выбор проекта и периода -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <select id="trendProjectSelect" onchange="updateTrendChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer;">
+                            <option value="">📋 Выберите проект...</option>
+                        </select>
+                        <select id="trendPeriodSelect" onchange="updateTrendChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer;">
+                            <option value="week">📅 Неделя</option>
+                            <option value="month" selected>📅 Месяц</option>
+                            <option value="quarter">📅 Квартал</option>
+                        </select>
+                    </div>
+
+                    <!-- Анализ тренда (KPI) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Текущий %</div>
+                            <div style="font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px;" id="trendCurrentValue">—</div>
+                            <div style="font-size: 10px; color: var(--text-muted);" id="trendCurrentDate">Дата</div>
+                        </div>
+                        <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Тренд</div>
+                            <div style="font-size: 24px; font-weight: 800; margin-bottom: 4px;" id="trendIndicator">—</div>
+                            <div style="font-size: 12px; font-weight: 700;" id="trendDescription">Нет данных</div>
+                        </div>
+                    </div>
+
+                    <!-- График тренда -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 300px; margin-bottom: 14px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+
+                    <!-- Детальная таблица тренда -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden;">
+                        <div style="padding: 12px; border-bottom: 1px solid var(--border);">
+                            <div style="font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase;">📊 История изменений</div>
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border); background: var(--surface);">
+                                    <th style="padding: 8px; text-align: left; font-weight: 800; color: var(--text-secondary); font-size: 11px;">Период</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary); font-size: 11px;">%</th>
+                                    <th style="padding: 8px; text-align: center; font-weight: 800; color: var(--text-secondary); font-size: 11px;">Изменение</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trendTableBody">
+                                <!-- Trend data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="bonus-section" class="content-section">
+
             <div style="padding: 12px; margin-top: 12px;">
                 <div class="section-title">🎁 Детально по бонусам</div>
                 <div class="task-item">
@@ -1105,6 +1170,7 @@
 
         <!-- ========== PLAN SECTION ========== -->
         <div id="plan-section" class="content-section">
+
             <div style="padding: 12px; margin-top: 12px;">
                 <div class="section-title">📍 План работ</div>
                 <div class="task-item">
@@ -1792,45 +1858,231 @@
             }
         };
 
-        function exportDynamicData() {
-            try {
-                const period = dynamicCurrentPeriod;
-                const periodName = { 'month': 'месяц', 'quarter': 'квартал', 'year': 'год' }[period];
-                const data = dynamicData[period + 'Data'];
+
+        // ===== ДАННЫЕ ТРЕНДА ДЛЯ ПРОЕКТОВ =====
+        const trendData = {
+            'KRKA': { week: [85, 88, 91, 95, 100, 103, 105], month: [90, 95, 100, 103, 105], quarter: [80, 90, 105] },
+            'Astra Zeneca': { week: [90, 94, 98, 102, 105, 106, 107], month: [92, 100, 105, 106, 107], quarter: [85, 100, 107] },
+            'SENTISS': { week: [95, 98, 100, 101, 102, 103, 103], month: [98, 100, 101, 102, 103], quarter: [95, 100, 103] },
+            'Medexport': { week: [78, 80, 82, 84, 85, 85, 86], month: [80, 82, 84, 85, 86], quarter: [75, 85, 86] },
+            'SYNERGY': { week: [58, 60, 61, 62, 63, 64, 65], month: [60, 62, 63, 64, 65], quarter: [55, 65, 65] },
+            'ZOMMER': { week: [62, 63, 64, 65, 65, 66, 66], month: [63, 64, 65, 65, 66], quarter: [60, 65, 66] },
+            'Alpen Pharma': { week: [55, 56, 57, 58, 59, 59, 60], month: [56, 57, 58, 59, 60], quarter: [50, 60, 60] },
+            'CCL': { week: [50, 50, 51, 51, 52, 52, 52], month: [50, 51, 51, 52, 52], quarter: [48, 52, 52] },
+            'BIOMIND': { week: [54, 55, 56, 56, 57, 57, 57], month: [55, 56, 56, 57, 57], quarter: [50, 57, 57] },
+            'POLISORB': { week: [48, 48, 49, 49, 50, 50, 50], month: [48, 49, 49, 50, 50], quarter: [45, 50, 50] },
+            'SAFE': { week: [0, 0, 0, 0, 0, 0, 0], month: [0, 0, 0, 0, 0], quarter: [0, 0, 0] },
+            'SIRIUS': { week: [25, 25, 26, 26, 27, 27, 27], month: [25, 26, 26, 27, 27], quarter: [20, 27, 27] }
+        };
+
+        let trendChart = null;
+        let trendCurrentPeriod = 'month';
+
+        // Переключение между вкладками
+        function switchDynamicTab(tab) {
+            const analyticsView = document.getElementById('analytics-view');
+            const trendView = document.getElementById('trend-view');
+            const tabAnalytics = document.getElementById('tab-analytics');
+            const tabTrend = document.getElementById('tab-trend');
+
+            if (tab === 'analytics') {
+                analyticsView.style.display = 'block';
+                trendView.style.display = 'none';
+                tabAnalytics.style.color = 'var(--primary)';
+                tabAnalytics.style.borderBottom = '3px solid var(--primary)';
+                tabTrend.style.color = 'var(--text-secondary)';
+                tabTrend.style.borderBottom = '3px solid transparent';
+            } else if (tab === 'trend') {
+                analyticsView.style.display = 'none';
+                trendView.style.display = 'block';
+                tabTrend.style.color = 'var(--primary)';
+                tabTrend.style.borderBottom = '3px solid var(--primary)';
+                tabAnalytics.style.color = 'var(--text-secondary)';
+                tabAnalytics.style.borderBottom = '3px solid transparent';
                 
-                if (!data) {
-                    alert('⚠️ Нет данных для экспорта');
+                // Инициализация тренда при открытии
+                setTimeout(() => {
+                    populateTrendProjectSelect();
+                    if (document.getElementById('trendProjectSelect').value) {
+                        updateTrendChart();
+                    }
+                }, 100);
+            }
+        }
+
+        // Заполнить выборку проектов для тренда
+        function populateTrendProjectSelect() {
+            const select = document.getElementById('trendProjectSelect');
+            select.innerHTML = '<option value="">📋 Выберите проект...</option>';
+            
+            Object.keys(trendData).forEach(projectName => {
+                const option = document.createElement('option');
+                option.value = projectName;
+                option.textContent = projectName;
+                select.appendChild(option);
+            });
+        }
+
+        // Обновить график тренда
+        function updateTrendChart() {
+            try {
+                const projectName = document.getElementById('trendProjectSelect').value;
+                const period = document.getElementById('trendPeriodSelect').value;
+                trendCurrentPeriod = period;
+
+                if (!projectName) {
+                    alert('⚠️ Выберите проект');
                     return;
                 }
 
-                // Создаем CSV
-                let csv = 'Период,Доход (млн сум),План,Процент\n';
-                data.labels.forEach((label, idx) => {
-                    const value = data.values[idx];
-                    const percent = Math.round((value / 2.5) * 100);
-                    csv += `${label},${value},2.5,${percent}%\n`;
+                const projectTrendData = trendData[projectName];
+                if (!projectTrendData) return;
+
+                const data = projectTrendData[period];
+                const periodLabels = {
+                    week: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    month: ['1 нед', '2 нед', '3 нед', '4 нед', 'Итог'],
+                    quarter: ['Месяц 1', 'Месяц 2', 'Месяц 3']
+                };
+
+                const labels = periodLabels[period];
+                const currentValue = data[data.length - 1];
+                const previousValue = data[0];
+                const change = currentValue - previousValue;
+                const percentChange = ((change / previousValue) * 100).toFixed(1);
+
+                // Обновить KPI
+                document.getElementById('trendCurrentValue').textContent = currentValue + '%';
+                document.getElementById('trendCurrentDate').textContent = labels[labels.length - 1];
+
+                // Определить тренд
+                let trendIcon, trendColor, trendText;
+                if (change > 10) {
+                    trendIcon = '⬆️';
+                    trendColor = 'var(--success)';
+                    trendText = `+${change}% (отличное развитие!)`;
+                } else if (change > 0) {
+                    trendIcon = '↗️';
+                    trendColor = 'var(--info)';
+                    trendText = `+${change}% (медленный рост)`;
+                } else if (change === 0) {
+                    trendIcon = '➡️';
+                    trendColor = 'var(--warning)';
+                    trendText = 'Стабильно (нет изменений)';
+                } else {
+                    trendIcon = '⬇️';
+                    trendColor = 'var(--danger)';
+                    trendText = `${change}% (падение!)`;
+                }
+
+                document.getElementById('trendIndicator').textContent = trendIcon;
+                document.getElementById('trendIndicator').style.color = trendColor;
+                document.getElementById('trendDescription').textContent = trendText;
+                document.getElementById('trendDescription').style.color = trendColor;
+
+                // Уничтожить старый график
+                if (trendChart !== null) {
+                    try {
+                        trendChart.destroy();
+                    } catch (e) {}
+                    trendChart = null;
+                }
+
+                // Создать новый график
+                const canvas = document.getElementById('trendChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+
+                const chartColor = change > 0 ? '#10b981' : change === 0 ? '#f59e0b' : '#ef4444';
+                
+                trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${projectName} (${period})`,
+                            data: data,
+                            borderColor: chartColor,
+                            backgroundColor: chartColor + '22',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: chartColor,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                padding: 12,
+                                titleFont: { size: 12, weight: 'bold' },
+                                bodyFont: { size: 11 },
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 110,
+                                ticks: { callback: function(value) { return value + '%'; } },
+                                grid: { color: 'rgba(200, 200, 200, 0.1)' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
                 });
 
-                // Правильное создание Blob для скачивания
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                
-                link.setAttribute('href', url);
-                link.setAttribute('download', `analytics_${period}_${new Date().toISOString().split('T')[0]}.csv`);
-                link.style.visibility = 'hidden';
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Освобождаем URL
-                URL.revokeObjectURL(url);
-                
-                alert(`✅ Файл экспортирован!\n\nПериод: ${periodName}\nФайл: analytics_${period}.csv`);
+                // Заполнить таблицу тренда
+                renderTrendTable(projectName, data, labels);
+
             } catch (error) {
-                console.error('Export error:', error);
-                alert('❌ Ошибка при экспорте:\n' + error.message);
+                console.error('Trend chart error:', error);
+            }
+        }
+
+        // Заполнить таблицу истории тренда
+        function renderTrendTable(projectName, data, labels) {
+            const tbody = document.getElementById('trendTableBody');
+            tbody.innerHTML = '';
+
+            for (let i = 0; i < data.length; i++) {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid var(--border)';
+                
+                let change = '';
+                if (i > 0) {
+                    const diff = data[i] - data[i - 1];
+                    if (diff > 0) {
+                        change = `<span style="color: var(--success); font-weight: 700;">⬆️ +${diff}%</span>`;
+                    } else if (diff < 0) {
+                        change = `<span style="color: var(--danger); font-weight: 700;">⬇️ ${diff}%</span>`;
+                    } else {
+                        change = `<span style="color: var(--warning); font-weight: 700;">➡️ Нет</span>`;
+                    }
+                } else {
+                    change = `<span style="color: var(--text-muted);">—</span>`;
+                }
+
+                row.innerHTML = `
+                    <td style="padding: 10px 8px; font-weight: 700; color: var(--primary);">${labels[i]}</td>
+                    <td style="padding: 10px 8px; text-align: right; font-size: 13px; font-weight: 700;">${data[i]}%</td>
+                    <td style="padding: 10px 8px; text-align: center;">${change}</td>
+                `;
+                tbody.appendChild(row);
             }
         }
 
@@ -1841,6 +2093,7 @@
                     setTimeout(() => {
                         populateDynamicProjectsList();
                         populateDynamicProjectSelect();
+                        populateTrendProjectSelect();
                         renderDynamicTable();
                         updateDynamicChart();
                     }, 200);
