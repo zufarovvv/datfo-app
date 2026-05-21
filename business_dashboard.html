@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DATFO - Дашборд аптеки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #1e7a34;
+            --primary-dark: #166129;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* ============= HEADER ============= */
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.4px;
+        }
+
+        .header-status {
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* ============= MAIN CONTAINER ============= */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ============= PHARMACY INFO CARD ============= */
+        .pharmacy-card {
+            background: var(--surface);
+            margin: 12px 12px 0 12px;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+        }
+
+        .pharmacy-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pharmacy-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pharmacy-name {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .pharmacy-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .pharmacy-inn {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ============= INCOME BLOCK ============= */
+        .income-block {
+            background: var(--surface);
+            margin: 12px 12px 0 12px;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .income-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .income-amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--warning);
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .income-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ============= STAT BOXES ============= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 12px 12px 0 12px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* ============= MONTH BLOCKS ============= */
+        .months-section {
+            margin: 16px 12px 0 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .months-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .month-block {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .month-header {
+            background: var(--bg-secondary);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .month-header-text {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .month-body {
+            padding: 12px;
+        }
+
+        .month-stat {
+            margin-bottom: 8px;
+        }
+
+        .month-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .month-stat-value {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .month-percent {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-secondary);
+        }
+
+        /* ============= BONUS BLOCKS ============= */
+        .bonus-section {
+            margin: 16px 12px 0 12px;
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .bonus-box {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .bonus-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .bonus-yellow {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .bonus-blue {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .bonus-green {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .bonus-content {
+            flex: 1;
+        }
+
+        .bonus-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .bonus-amount {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .bonus-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* ============= SECTIONS CONTENT ============= */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ============= TABLE ============= */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 0 0;
+        }
+
+        .table th {
+            background: var(--bg-secondary);
+            padding: 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .table tr:hover {
+            background: var(--bg-primary);
+        }
+
+        /* ============= CHART ============= */
+        .chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin: 12px 12px 0 12px;
+            padding: 16px;
+            height: 300px;
+        }
+
+        /* ============= TASK LIST ============= */
+        .task-item {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin: 0 12px 12px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .task-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .task-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .task-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============= BOTTOM NAVIGATION ============= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            z-index: 200;
+            overflow-x: auto;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 12px 8px;
+            border: none;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ============= PADDING FOR BOTTOM NAV ============= */
+        body {
+            padding-bottom: 80px;
+        }
+
+        /* ============= SUCCESS/WARNING/DANGER COLORS ============= */
+        .success-badge {
+            color: var(--success);
+        }
+
+        .warning-badge {
+            color: var(--warning);
+        }
+
+        .danger-badge {
+            color: var(--danger);
+        }
+
+        /* ============= FOOTER ============= */
+        .footer {
+            text-align: center;
+            padding: 20px 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: var(--border);
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-logo">DATFO</div>
+        <div class="header-status">🟢 Актуально</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- ========== DASHBOARD SECTION (DEFAULT) ========== -->
+        <div id="dashboard-section" class="content-section active">
+            <!-- PHARMACY INFO -->
+            <div class="pharmacy-card">
+                <div class="pharmacy-logo">DATFO</div>
+                <div class="pharmacy-info">
+                    <div class="pharmacy-name">"TARGET PHARM" МСН</div>
+                    <div class="pharmacy-details">
+                        Ташкент
+                    </div>
+                    <div class="pharmacy-inn">ИНН: 305176332</div>
+                </div>
+            </div>
+
+            <!-- INCOME -->
+            <div class="income-block">
+                <div class="income-label">💰 Доход за квартал</div>
+                <div class="income-amount">7.0M</div>
+                <div class="income-sublabel">сум</div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number success-badge">3</div>
+                    <div class="stat-label">Выполнено</div>
+                    <div class="stat-desc">100%+</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number warning-badge">7</div>
+                    <div class="stat-label">Частично</div>
+                    <div class="stat-desc">Ускорение</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number danger-badge">2</div>
+                    <div class="stat-label">Критично</div>
+                    <div class="stat-desc">Вмешательство</div>
+                </div>
+            </div>
+
+            <!-- MONTHLY BLOCKS -->
+            <div class="months-section">
+                <div class="section-title">📅 По месяцам</div>
+                <div class="months-grid">
+                    <div class="month-block">
+                        <div class="month-header"><div class="month-header-text">Январь</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value success-badge">64.8M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">80.0M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill warning-badge" style="background: var(--warning); width: 81%;"></div></div>
+                            <div class="month-percent">81%</div>
+                        </div>
+                    </div>
+                    <div class="month-block">
+                        <div class="month-header"><div class="month-header-text">Февраль</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value success-badge">118.1M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">122.0M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--success); width: 97%;"></div></div>
+                            <div class="month-percent">97%</div>
+                        </div>
+                    </div>
+                    <div class="month-block">
+                        <div class="month-header"><div class="month-header-text">Март</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value danger-badge">51.3M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">121.8M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--danger); width: 42%;"></div></div>
+                            <div class="month-percent">42%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BONUSES -->
+            <div class="bonus-section">
+                <div class="section-title">🎁 Бонусы</div>
+                <div class="bonus-grid">
+                    <div class="bonus-box">
+                        <div class="bonus-icon bonus-yellow">⭐</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Начислено</div>
+                            <div class="bonus-amount" style="color: var(--warning);">13.6M</div>
+                            <div class="bonus-desc">3 проекта выполнено на 100%+</div>
+                        </div>
+                    </div>
+                    <div class="bonus-box">
+                        <div class="bonus-icon bonus-blue">📊</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Потенциальный</div>
+                            <div class="bonus-amount" style="color: var(--info);">+ 43.3M</div>
+                            <div class="bonus-desc">До 56.8M (9 проектов)</div>
+                        </div>
+                    </div>
+                    <div class="bonus-box">
+                        <div class="bonus-icon bonus-green">✓</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Выполнено</div>
+                            <div class="bonus-amount" style="color: var(--success);">17.6M</div>
+                            <div class="bonus-desc">KRKA, Astra, SENTISS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DETAIL SECTION ========== -->
+        <div id="detail-section" class="content-section">
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">📋 Все проекты</div>
+                <div style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Проект</th>
+                                <th>Факт</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>KRKA</td><td>98.8M</td><td style="color: var(--success); font-weight: 800;">105%</td></tr>
+                            <tr><td>Astra Zeneca</td><td>122M</td><td style="color: var(--success); font-weight: 800;">107%</td></tr>
+                            <tr><td>SENTISS</td><td>30M</td><td style="color: var(--success); font-weight: 800;">103%</td></tr>
+                            <tr><td>Medexport</td><td>60.8M</td><td style="color: var(--warning); font-weight: 800;">86%</td></tr>
+                            <tr><td>SYNERGY</td><td>94.6M</td><td style="color: var(--warning); font-weight: 800;">65%</td></tr>
+                            <tr><td>ZOMMER</td><td>65.6M</td><td style="color: var(--warning); font-weight: 800;">66%</td></tr>
+                            <tr><td>Alpen Pharma</td><td>17M</td><td style="color: var(--warning); font-weight: 800;">60%</td></tr>
+                            <tr><td>CCL</td><td>29M</td><td style="color: var(--warning); font-weight: 800;">52%</td></tr>
+                            <tr><td>BIOMIND</td><td>17.2M</td><td style="color: var(--warning); font-weight: 800;">57%</td></tr>
+                            <tr><td>POLISORB</td><td>43.8M</td><td style="color: var(--warning); font-weight: 800;">50%</td></tr>
+                            <tr><td>SAFE</td><td>0M</td><td style="color: var(--danger); font-weight: 800;">0%</td></tr>
+                            <tr><td>SIRIUS</td><td>9.2M</td><td style="color: var(--danger); font-weight: 800;">27%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DYNAMICS SECTION ========== -->
+        <div id="dynamic-section" class="content-section">
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">📈 Графики</div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== BONUS SECTION ========== -->
+        <div id="bonus-section" class="content-section">
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">🎁 Детально по бонусам</div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>KRKA</h4>
+                        <p>105% → 6,916,000 сум</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>Astra Zeneca</h4>
+                        <p>107% → 8,540,000 сум</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>SENTISS</h4>
+                        <p>103% → 2,100,000 сум</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== PLAN SECTION ========== -->
+        <div id="plan-section" class="content-section">
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">📍 План работ</div>
+                <div class="task-item">
+                    <div class="task-icon">📞</div>
+                    <div class="task-content">
+                        <h4>Связаться с менеджером</h4>
+                        <p>Проверить статус текущих проектов</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">👥</div>
+                    <div class="task-content">
+                        <h4>Встреча с фармацевтами</h4>
+                        <p>14 аптек из сети TARGET PHARM</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">📦</div>
+                    <div class="task-content">
+                        <h4>Проверить выкладку</h4>
+                        <p>Убедиться в наличии товара</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">📋</div>
+                    <div class="task-content">
+                        <h4>Еженедельный контроль</h4>
+                        <p>Мониторинг выполнения планов</p>
+                    </div>
+                </div>
+                <div style="background: var(--bg-secondary); border-radius: var(--radius); padding: 16px; margin: 0 12px 12px 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">📞 Контакты:</div>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Жасур Пармонов</strong></div>
+                    <div style="font-size: 12px; color: var(--info); cursor: pointer;">↗️ https://t.me/FOM_Zohidjon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="footer-divider"></div>
+            <div>© 2026 DATFO Dashboard</div>
+            <div>Обновлено: сегодня 14:32</div>
+            <div>v2.3.0</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchSection('dashboard')">📊 Обзор</button>
+        <button class="nav-btn" onclick="switchSection('detail')">📋 Детально</button>
+        <button class="nav-btn" onclick="switchSection('dynamic')">📈 Графики</button>
+        <button class="nav-btn" onclick="switchSection('bonus')">🎁 Бонусы</button>
+        <button class="nav-btn" onclick="switchSection('plan')">📍 План</button>
+    </div>
+
+    <script>
+        // TELEGRAM WEB APP INITIALIZATION
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            tg.setBackgroundColor('#f8fafc');
+        }
+
+        // SECTION SWITCHING
+        function switchSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const sectionId = `${sectionName}-section`;
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+
+                // Initialize charts if needed
+                if (sectionName === 'dynamic' && !window.chartsInitialized) {
+                    setTimeout(initCharts, 100);
+                }
+            }
+
+            // Update button states
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // CHARTS
+        window.chartsInitialized = false;
+
+        function initCharts() {
+            if (window.chartsInitialized) return;
+            window.chartsInitialized = true;
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    filler: { propagate: true },
+                    legend: { display: false }
+                }
+            };
+
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Январь', 'Февраль', 'Март'],
+                    datasets: [{
+                        label: 'Доход (млн сум)',
+                        data: [2.1, 2.4, 2.8],
+                        backgroundColor: ['#10b981', '#059669', '#047857'],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#f1f5f9', drawBorder: false } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'],
+                    datasets: [{
+                        label: 'Доход (млн сум)',
+                        data: [1.8, 2.1, 2.4, 2.8, 3.1, 3.5, 3.8, 4.1, 3.9, 4.2, 4.5, 4.8],
+                        borderColor: '#1e7a34',
+                        backgroundColor: 'rgba(30, 122, 52, 0.05)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#1e7a34',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#f1f5f9', drawBorder: false } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
