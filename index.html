@@ -48,7 +48,7 @@
             font-size: 16px;
             line-height: 1.5;
             overflow-x: hidden;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         /* ============= HEADER ============= */
@@ -695,33 +695,40 @@
         /* ============= BOTTOM NAVIGATION (GLASSMORPHISM) ============= */
         .bottom-nav {
             position: fixed;
-            bottom: 20px;
-            left: 12px;
-            right: 12px;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 12px 8px;
+            border-radius: 18px;
+            padding: 10px 6px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 200;
             overflow-x: auto;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            justify-content: center;
+            overflow-y: hidden;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            justify-content: space-around;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            scrollbar-width: none;
+        }
+
+        .bottom-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-btn {
             flex: 1;
-            min-width: 70px;
-            padding: 12px 8px;
+            min-width: 60px;
+            max-width: 70px;
+            padding: 10px 6px;
             border: none;
             background: rgba(255, 255, 255, 0.4);
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             white-space: normal;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -729,10 +736,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             text-align: center;
             box-shadow: none;
             border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-btn span:first-child {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .nav-btn span:last-child {
+            font-size: 8px;
+            line-height: 1.2;
         }
 
         .nav-btn.active {
@@ -744,16 +761,16 @@
 
         .nav-btn:hover {
             background: rgba(255, 255, 255, 0.6);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .nav-btn.active:hover {
             background: rgba(59, 130, 246, 0.95);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .nav-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
 
         /* ============= NO RESULTS ============= */
