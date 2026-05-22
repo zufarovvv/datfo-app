@@ -692,40 +692,64 @@
             color: var(--text-secondary);
         }
 
-        /* ============= BOTTOM NAVIGATION ============= */
+        /* ============= BOTTOM NAVIGATION (GLASSMORPHISM) ============= */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 8px;
+            bottom: 20px;
+            left: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 12px 8px;
             display: flex;
-            gap: 4px;
+            gap: 8px;
             z-index: 200;
             overflow-x: auto;
-            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
         .nav-btn {
             flex: 1;
-            min-width: 90px;
+            min-width: 70px;
             padding: 12px 8px;
             border: none;
-            background: var(--bg-secondary);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
             cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 600;
+            white-space: normal;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .nav-btn.active {
-            background: var(--primary);
+            background: rgba(59, 130, 246, 0.9);
             color: white;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active:hover {
+            background: rgba(59, 130, 246, 0.95);
+            transform: translateY(-2px);
         }
 
         .nav-btn:active {
@@ -1366,11 +1390,26 @@
 
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-        <button class="nav-btn active" onclick="switchSection('dashboard')">📊 Обзор</button>
-        <button class="nav-btn" onclick="switchSection('detail')">📋 Детально</button>
-        <button class="nav-btn" onclick="switchSection('dynamic')">📈 Графики</button>
-        <button class="nav-btn" onclick="switchSection('bonus')">🎁 Бонусы</button>
-        <button class="nav-btn" onclick="switchSection('plan')">📍 План</button>
+        <button class="nav-btn active" onclick="switchSection('dashboard')">
+            <span style="font-size: 20px;">📊</span>
+            <span>Обзор</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('detail')">
+            <span style="font-size: 20px;">📋</span>
+            <span>Детально</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('dynamic')">
+            <span style="font-size: 20px;">📈</span>
+            <span>Графики</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('bonus')">
+            <span style="font-size: 20px;">🎁</span>
+            <span>Бонусы</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('plan')">
+            <span style="font-size: 20px;">📍</span>
+            <span>План</span>
+        </button>
     </div>
 
     <script>
@@ -1578,7 +1617,11 @@
             }
 
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            // Найти ближайшую кнопку, даже если был клик на вложенный элемент
+            const clickedBtn = event.target.closest('.nav-btn');
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
