@@ -1590,6 +1590,9 @@
 
             document.getElementById('modalBody').innerHTML = html;
             modal.classList.add('active');
+            
+            // 🔒 Заморозить скролл фона
+            document.body.style.overflow = 'hidden';
 
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
@@ -1599,6 +1602,9 @@
         function closeModal() {
             const modal = document.getElementById('detailsModal');
             modal.classList.remove('active');
+            
+            // 🔓 Разморозить скролл фона
+            document.body.style.overflow = '';
         }
 
         document.addEventListener('keydown', (e) => {
@@ -1929,6 +1935,7 @@
                 let modal = document.getElementById('dynamicComparisonModal');
                 if (modal) {
                     modal.remove();
+                    document.body.style.overflow = '';  // 🔓 Разморозить скролл
                     return;
                 }
 
@@ -1956,7 +1963,7 @@
                         ">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                 <div style="font-size: 18px; font-weight: 800;">🔄 Сравнение</div>
-                                <button onclick="document.getElementById('dynamicComparisonModal').remove()" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 700;">✕</button>
+                                <button onclick="document.getElementById('dynamicComparisonModal').remove(); document.body.style.overflow = '';" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 700;">✕</button>
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
@@ -1989,10 +1996,14 @@
 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
                 
+                // 🔒 Заморозить скролл фона
+                document.body.style.overflow = 'hidden';
+                
                 // Закрытие при клике на фон
                 document.getElementById('dynamicComparisonModal').addEventListener('click', function(e) {
                     if (e.target === this) {
                         this.remove();
+                        document.body.style.overflow = '';  // 🔓 Разморозить скролл
                     }
                 });
 
