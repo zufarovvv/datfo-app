@@ -1801,13 +1801,57 @@
                 }
 
                 return `
-                    <tr>
+                    <tr onclick="showProjectProducts('${project.name}')" style="cursor: pointer; transition: background 0.2s;">
                         <td>${project.name}</td>
                         <td>${project.fact}</td>
                         <td style="color: ${percentColor}; font-weight: 800; text-align: right;">${project.percent}%</td>
                     </tr>
                 `;
             }).join('');
+
+            // Add hover effect to rows
+            document.querySelectorAll('#projectsTableBody tr').forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = 'var(--bg-secondary)';
+                });
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+            });
+        }
+
+        // Show project products modal (Under Development)
+        function showProjectProducts(projectName) {
+            const modal = document.getElementById('fullscreenModal');
+            const body = document.getElementById('fullscreenBody');
+            const title = document.getElementById('fullscreenTitle');
+
+            title.textContent = projectName;
+
+            const html = `
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center;">
+                    <div style="padding: 40px 20px;">
+                        <div style="font-size: 64px; margin-bottom: 24px;">🚀</div>
+                        <h2 style="font-size: 28px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Сайт в разработке</h2>
+                        <p style="font-size: 16px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
+                            База данных товаров<br>проекта <strong>${projectName}</strong><br>будет добавлена в ближайшее время
+                        </p>
+                        <div style="margin-top: 32px;">
+                            <div style="font-size: 14px; color: var(--text-muted);">⏳ Скоро здесь появится полная информация о препаратах</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
         }
 
         function updateResultsInfo(filtered) {
