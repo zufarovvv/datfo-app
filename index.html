@@ -970,6 +970,293 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* ============= FULLSCREEN MODAL ============= */
+        .fullscreen-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            padding: 0;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fullscreen-modal-content {
+            background: var(--surface);
+            border-radius: 0;
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            overflow-y: auto;
+            animation: slideUpModal 0.3s ease;
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header-fullscreen {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .modal-title-fullscreen {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .modal-close-fullscreen {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-close-fullscreen:hover {
+            color: var(--text-primary);
+            transform: scale(1.1);
+        }
+
+        .modal-body-fullscreen {
+            padding: 16px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ============= MONTH DETAILS ============= */
+        .month-detail-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+
+        .month-detail-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 10px;
+        }
+
+        .month-detail-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .month-detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .month-detail-stat {
+            background: var(--surface);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .month-detail-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .month-detail-stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* ============= BONUS DETAILS ============= */
+        .bonus-detail-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .bonus-detail-header {
+            margin-bottom: 24px;
+        }
+
+        .bonus-detail-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+
+        .bonus-detail-amount {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .bonus-detail-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .bonus-projects-list {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .bonus-projects-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+
+        .bonus-project-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bonus-project-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bonus-project-name {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .bonus-project-percent {
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* Make month/bonus blocks clickable */
+        .month-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .month-block:active {
+            transform: scale(0.98);
+        }
+
+        .month-block:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .bonus-box {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bonus-box:active {
+            transform: scale(0.98);
+        }
+
+        .bonus-box:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        /* Make pharmacy and income clickable */
+        .pharmacy-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pharmacy-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .pharmacy-card:active {
+            transform: scale(0.98);
+        }
+
+        .income-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .income-block:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--warning);
+        }
+
+        .income-block:active {
+            transform: scale(0.98);
+        }
     </style>
     </head>
 <body>
@@ -990,11 +1277,22 @@
         </div>
     </div>
 
+    <!-- FULLSCREEN MODAL FOR MONTHS AND BONUSES -->
+    <div id="fullscreenModal" class="fullscreen-modal">
+        <div class="fullscreen-modal-content">
+            <div class="modal-header-fullscreen">
+                <div class="modal-title-fullscreen" id="fullscreenTitle">Январь</div>
+                <button class="modal-close-fullscreen" onclick="closeFullscreenModal()">✕</button>
+            </div>
+            <div class="modal-body-fullscreen" id="fullscreenBody"></div>
+        </div>
+    </div>
+
     <!-- MAIN CONTENT -->
     <div class="container">
         <!-- ========== DASHBOARD SECTION ========== -->
         <div id="dashboard-section" class="content-section active">
-            <div class="pharmacy-card">
+            <div class="pharmacy-card" onclick="showPharmacyInfo()">
                 <div class="pharmacy-logo">DATFO</div>
                 <div class="pharmacy-info">
                     <div class="pharmacy-name">"TARGET PHARM" МСН</div>
@@ -1003,7 +1301,7 @@
                 </div>
             </div>
 
-            <div class="income-block">
+            <div class="income-block" onclick="showIncomeDetails()">
                 <div class="income-label">💰 Доход за квартал</div>
                 <div class="income-amount">7.0M</div>
                 <div class="income-sublabel">сум</div>
@@ -1030,7 +1328,7 @@
             <div class="months-section">
                 <div class="section-title">📅 По месяцам</div>
                 <div class="months-grid">
-                    <div class="month-block">
+                    <div class="month-block" onclick="showMonthDetails('january')">
                         <div class="month-header"><div class="month-header-text">Январь</div></div>
                         <div class="month-body">
                             <div class="month-stat">
@@ -1045,7 +1343,7 @@
                             <div class="month-percent">81%</div>
                         </div>
                     </div>
-                    <div class="month-block">
+                    <div class="month-block" onclick="showMonthDetails('february')">
                         <div class="month-header"><div class="month-header-text">Февраль</div></div>
                         <div class="month-body">
                             <div class="month-stat">
@@ -1060,7 +1358,7 @@
                             <div class="month-percent">97%</div>
                         </div>
                     </div>
-                    <div class="month-block">
+                    <div class="month-block" onclick="showMonthDetails('march')">
                         <div class="month-header"><div class="month-header-text">Март</div></div>
                         <div class="month-body">
                             <div class="month-stat">
@@ -1081,7 +1379,7 @@
             <div class="bonus-section">
                 <div class="section-title">🎁 Бонусы</div>
                 <div class="bonus-grid">
-                    <div class="bonus-box">
+                    <div class="bonus-box" onclick="showBonusDetails('accrued')">
                         <div class="bonus-icon bonus-yellow">⭐</div>
                         <div class="bonus-content">
                             <div class="bonus-label">Начислено</div>
@@ -1089,7 +1387,7 @@
                             <div class="bonus-desc">3 проекта выполнено на 100%+</div>
                         </div>
                     </div>
-                    <div class="bonus-box">
+                    <div class="bonus-box" onclick="showBonusDetails('potential')">
                         <div class="bonus-icon bonus-blue">📊</div>
                         <div class="bonus-content">
                             <div class="bonus-label">Потенциальный</div>
@@ -1097,7 +1395,7 @@
                             <div class="bonus-desc">До 56.8M (9 проектов)</div>
                         </div>
                     </div>
-                    <div class="bonus-box">
+                    <div class="bonus-box" onclick="showBonusDetails('completed')">
                         <div class="bonus-icon bonus-green">✓</div>
                         <div class="bonus-content">
                             <div class="bonus-label">Выполнено</div>
@@ -1565,51 +1863,44 @@
 
         // ========== MODAL FUNCTIONS ==========
         function showDetails(status) {
-            const modal = document.getElementById('detailsModal');
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
             const projects = projectsData[status];
             const info = statusLabels[status];
 
-            document.getElementById('modalTitle').textContent = info.title;
+            title.textContent = info.title;
 
             let html = '';
             projects.forEach(project => {
                 const percentColor = project.percent >= 100 ? 'var(--success)' : 
                                    project.percent >= 75 ? 'var(--warning)' : 'var(--danger)';
                 html += `
-                    <div class="project-item">
-                        <div class="project-info">
-                            <h4>${project.name}</h4>
-                            <p>Факт: ${project.fact} / План: ${project.plan}</p>
+                    <div style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text-primary);">${project.name}</h4>
+                            <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Факт: <strong>${project.fact}</strong> / План: <strong>${project.plan}</strong></p>
                         </div>
-                        <div class="project-percent">
-                            <div class="project-percent-value" style="color: ${percentColor};">${project.percent}%</div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800; color: ${percentColor}; line-height: 1;">${project.percent}%</div>
                         </div>
                     </div>
                 `;
             });
 
-            document.getElementById('modalBody').innerHTML = html;
+            body.innerHTML = html;
             modal.classList.add('active');
             
-            // 🔒 Заморозить скролл фона
             document.body.style.overflow = 'hidden';
 
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
+                if (e.target === modal) closeFullscreenModal();
             });
         }
 
         function closeModal() {
-            const modal = document.getElementById('detailsModal');
-            modal.classList.remove('active');
-            
-            // 🔓 Разморозить скролл фона
-            document.body.style.overflow = '';
+            closeFullscreenModal();
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
 
         // ========== TELEGRAM INIT ==========
         if (window.Telegram && window.Telegram.WebApp) {
@@ -2340,6 +2631,467 @@
                 console.error('Dynamic section init error:', e);
             }
         };
+
+        // ========== FULLSCREEN MODAL FUNCTIONS ==========
+        
+        // Month details data
+        const monthDetails = {
+            january: {
+                title: '📅 Январь',
+                fact: '64.8M',
+                plan: '80.0M',
+                percent: 81,
+                status: 'warning',
+                statusText: 'Требуется ускорение',
+                trend: '-19.2M',
+                days: 31,
+                avgPerDay: '2.09M',
+                topProject: 'KRKA (12.5M)',
+                notes: 'Слабый старт квартала. Нужна активизация продаж.'
+            },
+            february: {
+                title: '📅 Февраль',
+                fact: '118.1M',
+                plan: '122.0M',
+                percent: 97,
+                status: 'success',
+                statusText: 'Хороший результат',
+                trend: '+53.3M',
+                days: 28,
+                avgPerDay: '4.22M',
+                topProject: 'Astra Zeneca (28.3M)',
+                notes: 'Месяц достигнут почти на полность. Отличные результаты по основным проектам.'
+            },
+            march: {
+                title: '📅 Март',
+                fact: '51.3M',
+                plan: '121.8M',
+                percent: 42,
+                status: 'danger',
+                statusText: 'Критическое положение',
+                trend: '-66.8M',
+                days: 24,
+                avgPerDay: '2.14M',
+                topProject: 'SENTISS (8.5M)',
+                notes: 'Срочное вмешательство требуется. Резкое падение показателей. Нужны меры по восстановлению.'
+            }
+        };
+
+        // Bonus details data
+        const bonusDetails = {
+            accrued: {
+                title: '⭐ Начислено',
+                icon: '⭐',
+                iconBg: 'rgba(245, 158, 11, 0.15)',
+                amount: '13.6M',
+                color: 'var(--warning)',
+                description: '3 проекта выполнены на 100% и более. Это означает, что вы превысили плановые показатели и получили вознаграждение.',
+                projects: [
+                    { name: 'KRKA', percent: 105, bonus: '6.92M' },
+                    { name: 'Astra Zeneca', percent: 107, bonus: '8.54M' },
+                    { name: 'SENTISS', percent: 103, bonus: '2.10M' }
+                ],
+                totalProjects: 3,
+                stats: [
+                    { label: 'Средний бонус', value: '4.53M' },
+                    { label: 'Лучший проект', value: 'Astra Zeneca' }
+                ]
+            },
+            potential: {
+                title: '📊 Потенциальный',
+                icon: '📊',
+                iconBg: 'rgba(59, 130, 246, 0.15)',
+                amount: '+ 43.3M',
+                color: 'var(--info)',
+                description: 'Сумма, которую вы можете получить дополнительно, если доведёте оставшиеся 9 проектов до плана. Это мотивирует работать интенсивнее.',
+                projects: [
+                    { name: 'Medexport', percent: 86, needed: '14%' },
+                    { name: 'SYNERGY', percent: 65, needed: '35%' },
+                    { name: 'ZOMMER', percent: 66, needed: '34%' },
+                    { name: 'Alpen Pharma', percent: 60, needed: '40%' },
+                    { name: 'CCL', percent: 52, needed: '48%' },
+                    { name: 'BIOMIND', percent: 57, needed: '43%' },
+                    { name: 'POLISORB', percent: 50, needed: '50%' },
+                    { name: 'SAFE', percent: 0, needed: '100%' },
+                    { name: 'SIRIUS', percent: 27, needed: '73%' }
+                ],
+                totalProjects: 9,
+                stats: [
+                    { label: 'Всего потенциал', value: '56.8M' },
+                    { label: 'Нужно ещё добавить', value: '+43.3M' }
+                ]
+            },
+            completed: {
+                title: '✓ Выполнено',
+                icon: '✓',
+                iconBg: 'rgba(16, 185, 129, 0.15)',
+                amount: '17.6M',
+                color: 'var(--success)',
+                description: 'Это бонусы, которые вы уже получили полностью. Эти проекты выполнены и деньги зачислены.',
+                projects: [
+                    { name: 'KRKA', status: '✅ Выплачено', amount: '6.92M' },
+                    { name: 'Astra Zeneca', status: '✅ Выплачено', amount: '8.54M' },
+                    { name: 'SENTISS', status: '✅ Выплачено', amount: '2.10M' }
+                ],
+                totalProjects: 3,
+                stats: [
+                    { label: 'Всего выплачено', value: '17.6M' },
+                    { label: 'Средний бонус', value: '5.87M' }
+                ]
+            }
+        };
+
+        function showMonthDetails(month) {
+            const data = monthDetails[month];
+            if (!data) return;
+
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = data.title;
+
+            let statusColor = data.status === 'success' ? '#10b981' : data.status === 'warning' ? '#f59e0b' : '#ef4444';
+            let statusIcon = data.status === 'success' ? '✅' : data.status === 'warning' ? '⚠️' : '🔴';
+
+            const html = `
+                <div class="month-detail-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 28px; line-height: 1;">${statusIcon}</div>
+                        <div>
+                            <div style="font-size: 12px; color: ${statusColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px;">Статус</div>
+                            <div style="font-size: 16px; font-weight: 800; color: ${statusColor};">${data.statusText}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Факт</div>
+                        <div class="month-detail-stat-value" style="color: var(--primary);">${data.fact}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">План</div>
+                        <div class="month-detail-stat-value">${data.plan}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-card">
+                    <div class="month-detail-title">📊 Выполнение плана</div>
+                    <div style="background: var(--surface); border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 700; color: var(--text-primary);">Процент</span>
+                            <span style="font-size: 24px; font-weight: 800; color: ${statusColor};">${data.percent}%</span>
+                        </div>
+                        <div class="progress-bar" style="height: 10px;">
+                            <div class="progress-fill" style="background: ${statusColor}; width: ${Math.min(data.percent, 100)}%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Отклонение</div>
+                        <div class="month-detail-stat-value" style="color: ${data.trend.includes('-') ? '#ef4444' : '#10b981'};">${data.trend}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Дней в месяце</div>
+                        <div class="month-detail-stat-value">${data.days}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Средний в день</div>
+                        <div class="month-detail-stat-value" style="color: var(--info);">${data.avgPerDay}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Топ проект</div>
+                        <div class="month-detail-stat-value" style="font-size: 14px; color: var(--primary);">${data.topProject}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-card">
+                    <div class="month-detail-title">📝 Заметки</div>
+                    <div style="font-size: 14px; line-height: 1.6; color: var(--text-secondary);">${data.notes}</div>
+                </div>
+
+                <div style="height: 12px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        function showBonusDetails(bonus) {
+            const data = bonusDetails[bonus];
+            if (!data) return;
+
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = data.title;
+
+            let html = `
+                <div class="bonus-detail-header">
+                    <div class="bonus-detail-icon" style="background: ${data.iconBg};">${data.icon}</div>
+                    <div class="bonus-detail-label">${data.title.replace(/^[🎁📊⭐✓]\s/, '')}</div>
+                    <div class="bonus-detail-amount" style="color: ${data.color};">${data.amount}</div>
+                    <div class="bonus-detail-desc">${data.description}</div>
+                </div>
+            `;
+
+            // Stats row
+            if (data.stats && data.stats.length > 0) {
+                html += '<div class="month-detail-row">';
+                data.stats.forEach(stat => {
+                    html += `
+                        <div class="month-detail-stat">
+                            <div class="month-detail-stat-label">${stat.label}</div>
+                            <div class="month-detail-stat-value" style="color: ${data.color}; font-size: 16px;">${stat.value}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Projects list
+            if (data.projects && data.projects.length > 0) {
+                html += `
+                    <div class="bonus-projects-list">
+                        <div class="bonus-projects-title">📋 ${data.totalProjects > 3 ? 'Все проекты' : 'Проекты'}</div>
+                `;
+                
+                data.projects.forEach(proj => {
+                    if (bonus === 'accrued' || bonus === 'completed') {
+                        html += `
+                            <div class="bonus-project-item">
+                                <div>
+                                    <div class="bonus-project-name">${proj.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">✅ ${proj.percent}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="bonus-project-percent" style="color: ${data.color};">${proj.bonus || proj.amount}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (bonus === 'potential') {
+                        html += `
+                            <div class="bonus-project-item">
+                                <div>
+                                    <div class="bonus-project-name">${proj.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">Текущий: ${proj.percent}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 12px; color: #f59e0b; font-weight: 700;">+${proj.needed}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += '</div>';
+            }
+
+            html += '<div style="height: 20px;"></div>';
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        function closeFullscreenModal() {
+            const modal = document.getElementById('fullscreenModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ========== PHARMACY INFO ==========
+        function showPharmacyInfo() {
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = 'Информация об аптеке';
+
+            const html = `
+                <div style="text-align: center; margin-bottom: 28px;">
+                    <div style="font-size: 14px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;">🏥 Аптека</div>
+                    <div style="font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.2;">
+                        "TARGET PHARM"<br>МСН
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">👤 Менеджер</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Жасур Пармонов</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Управление и координация работ аптеки</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">📊 Статистика</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--primary);">12</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Проектов</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--warning);">7</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">В процессе</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--success);">3</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Выполнено</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px; margin-top: 28px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">📍 Расположение</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Город</div>
+                            <div style="color: var(--text-primary); font-weight: 700;">Ташкент</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Регион</div>
+                            <div style="color: var(--text-primary); font-weight: 700;">Узбекистан</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div style="color: var(--text-secondary); font-weight: 600;">ИНН</div>
+                            <div style="color: var(--primary); font-weight: 700; font-family: monospace;">305176332</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        // ========== INCOME DETAILS ==========
+        function showIncomeDetails() {
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = 'Доход за квартал';
+
+            const html = `
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Итого за квартал</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 800; color: var(--warning);">7.0M</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">Сумм</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">По месяцам</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Январь</div>
+                            <div style="font-weight: 700;">2.16M <span style="font-size: 11px; color: var(--text-muted);">(31%)</span></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Февраль</div>
+                            <div style="font-weight: 700; color: var(--success);">3.93M <span style="font-size: 11px; color: var(--text-muted);">(56%)</span></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Март</div>
+                            <div style="font-weight: 700; color: var(--danger);">0.91M <span style="font-size: 11px; color: var(--text-muted);">(13%)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Анализ</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600;">Среднее</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--info);">2.33M</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600;">Максимум</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--success);">3.93M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Источник доходов</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">KRKA</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">105% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">6.92M</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">Astra Zeneca</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">107% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">8.54M</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">SENTISS</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">103% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">2.10M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreenModal();
+            }
+        });
 
         // Также вызываем при загрузке
         window.addEventListener('load', function() {
