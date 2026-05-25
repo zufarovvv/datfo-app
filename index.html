@@ -1972,8 +1972,12 @@
         
             try {
                 const res = await fetch(url, {
-                    headers: initData ? { 'X-Telegram-Init-Data': initData } : {}
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        ...(initData ? { 'X-Telegram-Init-Data': initData } : {})
+                    }
                 });
+
                 if (!res.ok) {
                     console.error('API error:', res.status, await res.text());
                     return;
