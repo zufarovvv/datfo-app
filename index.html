@@ -1993,21 +1993,68 @@
         function applyUserData(data) {
             const pharm = data.pharmacies?.[0];
             if (!pharm) return;
+            const d = pharm.dashboard || {};
         
-            // Подменяем шапку аптеки на главном экране
-            const nameEl = document.querySelector('.pharmacy-name');
-            const innEl = document.querySelector('.pharmacy-inn');
-            if (nameEl) nameEl.textContent = pharm.business || pharm.name || '—';
-            if (innEl) innEl.textContent = 'ИНН: ' + (pharm.inn || '—');
+            // --- Шапка аптеки ---
+            setText('.pharmacy-name', pharm.business || pharm.name || '—');
+            setText('.pharmacy-details', d.city || 'Ташкент');
+            setText('.pharmacy-inn', 'ИНН: ' + (pharm.inn || '—'));
         
-            // Если у юзера несколько аптек — можно показать селектор (на будущее)
-            if (data.pharmacies.length > 1) {
-                console.log(`У пользователя ${data.pharmacies.length} аптек — селектор пока не реализован`);
+            // --- Доход за квартал ---
+            if (d.income_quarter) setText('.income-amount', d.income_quarter);
+        
+            // --- Stats (completed/partial/critical) ---
+            if (d.stats) {
+                const statBoxes = document.querySelectorAll('.stats-grid .stat-number');
+                if (statBoxes[0]) statBoxes[0].textContent = d.stats.completed ?? 0;
+                if (statBoxes[1]) statBoxes[1].textContent = d.stats.partial ?? 0;
+                if (statBoxes[2]) statBoxes[2].textContent = d.stats.critical ?? 0;
+            }
+        
+            // --- Месяцы (Январь / Февраль / Март) ---
+            if (d.months) {
+                const monthBlocks = document.querySelectorAll('.month-block');
+                ['january', 'february', 'march'].forEach((key, i) => {
+                    const m = d.months[key];
+                    const block = monthBlocks[i];
+                    if (!m || !block) return;
+                    const vals = block.querySelectorAll('.month-stat-value');
+                    if (vals[0]) vals[0].textContent = m.fact;
+                    if (vals[1]) vals[1].textContent = m.plan;
+                    const fill = block.querySelector('.progress-fill');
+                    const pct = block.querySelector('.month-percent');
+                    if (fill) fill.style.width = m.percent + '%';
+                    if (pct) pct.textContent = m.percent + '%';
+                });
+            }
+        
+            // --- Проекты (для секции "Детально") ---
+            if (Array.isArray(d.projects) && window.allProjects) {
+                window.allProjects.length = 0;
+                d.projects.forEach(p => window.allProjects.push(p));
+                if (typeof filterProjects === 'function') filterProjects();
+            }
+        
+            // --- Бонусы ---
+            if (d.bonuses) {
+                const bonusBoxes = document.querySelectorAll('.bonus-box');
+                ['accrued', 'potential', 'completed'].forEach((key, i) => {
+                    const b = d.bonuses[key];
+                    const box = bonusBoxes[i];
+                    if (!b || !box) return;
+                    const amt = box.querySelector('.bonus-amount');
+                    const desc = box.querySelector('.bonus-desc');
+                    if (amt && b.amount) amt.textContent = b.amount;
+                    if (desc && b.desc) desc.textContent = b.desc;
+                });
             }
         }
         
-        // Запускаем при загрузке
-        loadUserData();
+        function setText(selector, value) {
+            const el = document.querySelector(selector);
+            if (el) el.textContent = value;
+        }
+
 
 
         // ========== SECTION SWITCHING ==========
