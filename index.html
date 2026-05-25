@@ -1945,14 +1945,66 @@
         function closeModal() {
             closeFullscreenModal();
         }
-
+    
+        // ========== API CONFIG ==========
+        const API_BASE = 'https://lyricist-thud-manicure.ngrok-free.dev';  // ← подставь свой ngrok URL
+        
         // ========== TELEGRAM INIT ==========
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-            tg.setBackgroundColor('#f8fafc');
+        const tg = window.Telegram?.WebApp;
+        if (tg) { tg.ready(); tg.expand(); tg.setBackgroundColor('#f8fafc'); }
+        
+        // ========== FETCH USER DATA ==========
+        async function loadUserData() {
+            // tg_id: сначала из URL (?tg_id=...), потом из Telegram WebApp
+            const urlParams = new URLSearchParams(window.location.search);
+            let tgId = urlParams.get('tg_id');
+            const initData = tg?.initData || '';
+        
+            const url = new URL(API_BASE + '/api/me');
+            if (initData) {
+                url.searchParams.set('init_data', initData);
+            } else if (tgId) {
+                url.searchParams.set('tg_id', tgId);
+            } else {
+                console.warn('Нет tg_id и нет initData — данные не загрузятся');
+                return;
+            }
+        
+            try {
+                const res = await fetch(url, {
+                    headers: initData ? { 'X-Telegram-Init-Data': initData } : {}
+                });
+                if (!res.ok) {
+                    console.error('API error:', res.status, await res.text());
+                    return;
+                }
+                const data = await res.json();
+                console.log('User data:', data);
+                applyUserData(data);
+            } catch (e) {
+                console.error('Fetch failed:', e);
+            }
         }
+        
+        function applyUserData(data) {
+            const pharm = data.pharmacies?.[0];
+            if (!pharm) return;
+        
+            // Подменяем шапку аптеки на главном экране
+            const nameEl = document.querySelector('.pharmacy-name');
+            const innEl = document.querySelector('.pharmacy-inn');
+            if (nameEl) nameEl.textContent = pharm.business || pharm.name || '—';
+            if (innEl) innEl.textContent = 'ИНН: ' + (pharm.inn || '—');
+        
+            // Если у юзера несколько аптек — можно показать селектор (на будущее)
+            if (data.pharmacies.length > 1) {
+                console.log(`У пользователя ${data.pharmacies.length} аптек — селектор пока не реализован`);
+            }
+        }
+        
+        // Запускаем при загрузке
+        loadUserData();
+
 
         // ========== SECTION SWITCHING ==========
         function switchSection(sectionName) {
