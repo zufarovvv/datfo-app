@@ -1,0 +1,3344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DATFO - Дашборд аптеки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #1e7a34;
+            --primary-dark: #166129;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+
+        /* ============= HEADER ============= */
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.4px;
+        }
+
+        .header-status {
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* ============= CONTAINER ============= */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ============= PHARMACY INFO ============= */
+        .pharmacy-card {
+            background: var(--surface);
+            margin: 12px 12px 0 12px;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+        }
+
+        .pharmacy-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pharmacy-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pharmacy-name {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .pharmacy-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .pharmacy-inn {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ============= INCOME BLOCK ============= */
+        .income-block {
+            background: var(--surface);
+            margin: 12px 12px 0 12px;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .income-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .income-amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--warning);
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .income-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ============= STAT BOXES ============= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 12px 12px 0 12px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:active {
+            transform: scale(0.95);
+            background: var(--bg-secondary);
+        }
+
+        .stat-box:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* ============= MONTH BLOCKS ============= */
+        .months-section {
+            margin: 16px 12px 0 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .months-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .month-block {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .month-header {
+            background: var(--bg-secondary);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .month-header-text {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .month-body {
+            padding: 12px;
+        }
+
+        .month-stat {
+            margin-bottom: 8px;
+        }
+
+        .month-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .month-stat-value {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .month-percent {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-secondary);
+        }
+
+        /* ============= BONUS SECTION ============= */
+        .bonus-section {
+            margin: 16px 12px 0 12px;
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .bonus-box {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .bonus-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .bonus-yellow {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .bonus-blue {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .bonus-green {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .bonus-content {
+            flex: 1;
+        }
+
+        .bonus-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .bonus-amount {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .bonus-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* ============= SECTIONS ============= */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ============= SEARCH AND FILTERS ============= */
+        .search-section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin: 12px 12px 0 12px;
+            padding: 14px;
+        }
+
+        .search-box {
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(30, 122, 52, 0.1);
+        }
+
+        .filters-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-range {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-range input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .filter-range input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-range input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-range-value {
+            min-width: 45px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .search-results {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .search-results.active {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ============= TABLE ============= */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 0 0;
+        }
+
+        .table th {
+            background: var(--bg-secondary);
+            padding: 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .table tr:hover {
+            background: var(--bg-primary);
+        }
+
+        /* ============= MODAL ============= */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius) var(--radius) 0 0;
+            width: 100%;
+            max-width: 100%;
+            margin-top: auto;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        .project-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .project-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .project-percent {
+            text-align: right;
+            min-width: 50px;
+        }
+
+        .project-percent-value {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* ============= CHART ============= */
+        .chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin: 12px 12px 0 12px;
+            padding: 16px;
+            height: 300px;
+        }
+
+        /* ============= TASKS ============= */
+        .task-item {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin: 0 12px 12px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .task-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .task-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .task-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============= BOTTOM NAVIGATION (GLASSMORPHISM) ============= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            padding: 10px 6px;
+            display: flex;
+            gap: 6px;
+            z-index: 200;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            justify-content: space-around;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            scrollbar-width: none;
+        }
+
+        .bottom-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 60px;
+            max-width: 70px;
+            padding: 10px 6px;
+            border: none;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 600;
+            white-space: normal;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-btn span:first-child {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .nav-btn span:last-child {
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .nav-btn.active {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.active:hover {
+            background: rgba(59, 130, 246, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ============= NO RESULTS ============= */
+        .no-results {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .no-results-text {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .no-results-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ============= FOOTER ============= */
+        .footer {
+            text-align: center;
+            padding: 20px 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ============= COLORS ============= */
+        .success-badge {
+            color: var(--success);
+        }
+
+        .warning-badge {
+            color: var(--warning);
+        }
+
+        .danger-badge {
+            color: var(--danger);
+        }
+
+        /* ============= ONBOARDING TOUR ============= */
+        .tour-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .tour-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .tour-spotlight {
+            position: absolute;
+            border-radius: 14px;
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.72), 0 0 0 4px var(--primary);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            background: transparent;
+        }
+        .tour-tooltip {
+            position: absolute;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            width: calc(100vw - 32px);
+            max-width: 340px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tour-tooltip-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        .tour-tooltip-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .tour-tooltip-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .tour-progress {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+        }
+        .tour-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .tour-btn {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tour-btn-skip {
+            background: transparent;
+            color: var(--text-muted);
+        }
+        .tour-btn-skip:hover { color: var(--text-secondary); }
+        .tour-btn-prev {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        .tour-btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        .tour-btn-next:hover { background: var(--primary-dark); }
+        .tour-welcome {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .tour-welcome.active { display: flex; }
+        .tour-welcome-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 28px 22px;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        .tour-welcome-emoji { font-size: 48px; margin-bottom: 8px; }
+        .tour-welcome-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.4px;
+        }
+        .tour-welcome-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .tour-welcome-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .tour-welcome-buttons .tour-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 13px;
+        }
+        .tour-restart {
+            position: fixed;
+            bottom: 90px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============= FULLSCREEN MODAL ============= */
+        .fullscreen-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            padding: 0;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fullscreen-modal-content {
+            background: var(--surface);
+            border-radius: 0;
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            overflow-y: auto;
+            animation: slideUpModal 0.3s ease;
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header-fullscreen {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .modal-title-fullscreen {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .modal-close-fullscreen {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-close-fullscreen:hover {
+            color: var(--text-primary);
+            transform: scale(1.1);
+        }
+
+        .modal-body-fullscreen {
+            padding: 16px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ============= MONTH DETAILS ============= */
+        .month-detail-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+
+        .month-detail-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 10px;
+        }
+
+        .month-detail-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .month-detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .month-detail-stat {
+            background: var(--surface);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .month-detail-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .month-detail-stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* ============= BONUS DETAILS ============= */
+        .bonus-detail-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .bonus-detail-header {
+            margin-bottom: 24px;
+        }
+
+        .bonus-detail-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+
+        .bonus-detail-amount {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .bonus-detail-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .bonus-projects-list {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .bonus-projects-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+
+        .bonus-project-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bonus-project-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bonus-project-name {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .bonus-project-percent {
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* Make month/bonus blocks clickable */
+        .month-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .month-block:active {
+            transform: scale(0.98);
+        }
+
+        .month-block:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .bonus-box {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bonus-box:active {
+            transform: scale(0.98);
+        }
+
+        .bonus-box:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        /* Make pharmacy and income clickable */
+        .pharmacy-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pharmacy-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .pharmacy-card:active {
+            transform: scale(0.98);
+        }
+
+        .income-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .income-block:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+            border-color: var(--warning);
+        }
+
+        .income-block:active {
+            transform: scale(0.98);
+        }
+    </style>
+    </head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-logo">DATFO</div>
+        <div class="header-status">🟢 Актуально</div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Выполнено</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN MODAL FOR MONTHS AND BONUSES -->
+    <div id="fullscreenModal" class="fullscreen-modal">
+        <div class="fullscreen-modal-content">
+            <div class="modal-header-fullscreen">
+                <div class="modal-title-fullscreen" id="fullscreenTitle">Январь</div>
+                <button class="modal-close-fullscreen" onclick="closeFullscreenModal()">✕</button>
+            </div>
+            <div class="modal-body-fullscreen" id="fullscreenBody"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- ========== DASHBOARD SECTION ========== -->
+        <div id="dashboard-section" class="content-section active">
+            <div class="pharmacy-card" onclick="showPharmacyInfo()">
+                <div class="pharmacy-logo">DATFO</div>
+                <div class="pharmacy-info">
+                    <div class="pharmacy-name">"TARGET PHARM" МСН</div>
+                    <div class="pharmacy-details">Ташкент</div>
+                    <div class="pharmacy-inn">ИНН: 305176332</div>
+                </div>
+            </div>
+
+            <div class="income-block" onclick="showIncomeDetails()">
+                <div class="income-label">💰 Доход за квартал</div>
+                <div class="income-amount">7.0M</div>
+                <div class="income-sublabel">сум</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box" onclick="showDetails('completed')">
+                    <div class="stat-number success-badge">3</div>
+                    <div class="stat-label">Выполнено</div>
+                    <div class="stat-desc">100%+</div>
+                </div>
+                <div class="stat-box" onclick="showDetails('partial')">
+                    <div class="stat-number warning-badge">7</div>
+                    <div class="stat-label">Частично</div>
+                    <div class="stat-desc">Ускорение</div>
+                </div>
+                <div class="stat-box" onclick="showDetails('critical')">
+                    <div class="stat-number danger-badge">2</div>
+                    <div class="stat-label">Критично</div>
+                    <div class="stat-desc">Вмешательство</div>
+                </div>
+            </div>
+
+            <div class="months-section">
+                <div class="section-title">📅 По месяцам</div>
+                <div class="months-grid">
+                    <div class="month-block" onclick="showMonthDetails('january')">
+                        <div class="month-header"><div class="month-header-text">Январь</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value success-badge">64.8M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">80.0M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--warning); width: 81%;"></div></div>
+                            <div class="month-percent">81%</div>
+                        </div>
+                    </div>
+                    <div class="month-block" onclick="showMonthDetails('february')">
+                        <div class="month-header"><div class="month-header-text">Февраль</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value success-badge">118.1M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">122.0M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--success); width: 97%;"></div></div>
+                            <div class="month-percent">97%</div>
+                        </div>
+                    </div>
+                    <div class="month-block" onclick="showMonthDetails('march')">
+                        <div class="month-header"><div class="month-header-text">Март</div></div>
+                        <div class="month-body">
+                            <div class="month-stat">
+                                <div class="month-stat-label">Факт</div>
+                                <div class="month-stat-value danger-badge">51.3M</div>
+                            </div>
+                            <div class="month-stat">
+                                <div class="month-stat-label">План</div>
+                                <div class="month-stat-value">121.8M</div>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="background: var(--danger); width: 42%;"></div></div>
+                            <div class="month-percent">42%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bonus-section">
+                <div class="section-title">🎁 Бонусы</div>
+                <div class="bonus-grid">
+                    <div class="bonus-box" onclick="showBonusDetails('accrued')">
+                        <div class="bonus-icon bonus-yellow">⭐</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Начислено</div>
+                            <div class="bonus-amount" style="color: var(--warning);">13.6M</div>
+                            <div class="bonus-desc">3 проекта выполнено на 100%+</div>
+                        </div>
+                    </div>
+                    <div class="bonus-box" onclick="showBonusDetails('potential')">
+                        <div class="bonus-icon bonus-blue">📊</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Потенциальный</div>
+                            <div class="bonus-amount" style="color: var(--info);">+ 43.3M</div>
+                            <div class="bonus-desc">До 56.8M (9 проектов)</div>
+                        </div>
+                    </div>
+                    <div class="bonus-box" onclick="showBonusDetails('completed')">
+                        <div class="bonus-icon bonus-green">✓</div>
+                        <div class="bonus-content">
+                            <div class="bonus-label">Выполнено</div>
+                            <div class="bonus-amount" style="color: var(--success);">17.6M</div>
+                            <div class="bonus-desc">KRKA, Astra, SENTISS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DETAIL SECTION ========== -->
+        <div id="detail-section" class="content-section">
+
+            <div style="padding: 0; margin-top: 12px;">
+                <div style="padding: 12px 12px 0 12px;"><div class="section-title">📋 Все проекты</div></div>
+                
+                <div class="search-section">
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="projectSearch" 
+                            placeholder="🔍 Найти проект (KRKA, Astra...)"
+                            onkeyup="filterProjects()"
+                        >
+                    </div>
+
+                    <div class="filters-group">
+                        <div>
+                            <div class="filter-label">📊 По статусу</div>
+                            <div class="filter-options">
+                                <button class="filter-btn active" onclick="setStatusFilter('all')" data-filter="all">Все</button>
+                                <button class="filter-btn" onclick="setStatusFilter('completed')" data-filter="completed">✅ Выполнено</button>
+                                <button class="filter-btn" onclick="setStatusFilter('partial')" data-filter="partial">⚠️ Частично</button>
+                                <button class="filter-btn" onclick="setStatusFilter('critical')" data-filter="critical">🔴 Критично</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="filter-label">📈 Минимум выполнения</div>
+                            <div class="filter-range">
+                                <input 
+                                    type="range" 
+                                    id="percentFilter" 
+                                    min="0" 
+                                    max="120" 
+                                    value="0" 
+                                    onchange="filterProjects()"
+                                    oninput="updatePercentValue()"
+                                >
+                                <div class="filter-range-value" id="percentValue">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+
+                <div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; border: 1px solid var(--border); border-top: none; margin: 0 12px;">
+                    <table class="table" id="projectsTable">
+                        <thead>
+                            <tr>
+                                <th>Проект</th>
+                                <th>Факт</th>
+                                <th style="text-align: right;">%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="no-results" id="noResults" style="display: none; margin: 0 12px;">
+                    <div class="no-results-icon">😔</div>
+                    <div class="no-results-text">Проектов не найдено</div>
+                    <div class="no-results-hint">Попробуйте другие параметры фильтра</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DYNAMIC SECTION ========== -->
+        <div id="dynamic-section" class="content-section">
+            <!-- ===== ВКЛАДКИ ===== -->
+            <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 2px solid var(--border); padding: 0 12px; padding-bottom: 0;">
+                <button onclick="switchDynamicTab('analytics')" id="tab-analytics" style="padding: 12px 16px; background: none; border: none; cursor: pointer; font-weight: 700; font-size: 13px; color: var(--primary); border-bottom: 3px solid var(--primary); transition: all 0.2s; margin-bottom: -2px;">📊 Аналитика</button>
+                <button onclick="switchDynamicTab('trend')" id="tab-trend" style="padding: 12px 16px; background: none; border: none; cursor: pointer; font-weight: 700; font-size: 13px; color: var(--text-secondary); border-bottom: 3px solid transparent; transition: all 0.2s; margin-bottom: -2px;">📈 Анализ тренда</button>
+            </div>
+
+            <!-- ===== РАЗДЕЛ АНАЛИТИКА ===== -->
+            <div id="analytics-view" style="display: block;">
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">📈 Аналитика</div>
+
+                <!-- ===== ФИЛЬТРЫ И ДЕЙСТВИЯ (НОВЫЙ ДИЗАЙН) ===== -->
+                <div style="display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 8px;">
+                    <select id="dynamicPeriodSelect" onchange="updateDynamicChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        <option value="month">📅 За месяц</option>
+                        <option value="quarter">📅 За квартал</option>
+                        <option value="year">📅 За год</option>
+                    </select>
+                    <button onclick="toggleDynamicComparison()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">🔄 Сравнить</button>
+                </div>
+
+                <!-- ===== KPI МЕТРИКИ ===== -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Среднее</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 4px;" id="dynamicAvg">2.3M</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">сум</div>
+                    </div>
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Максимум</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--success); margin-bottom: 4px;" id="dynamicMax">2.8M</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">сум</div>
+                    </div>
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Прирост</div>
+                        <div style="font-size: 24px; font-weight: 800; color: var(--warning); margin-bottom: 4px;" id="dynamicGrowth">+15%</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">⬆️</div>
+                    </div>
+                </div>
+
+                <!-- ===== ОСНОВНОЙ ГРАФИК И ПРОЕКТЫ (АДАПТИВНО) ===== -->
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px;">
+                    <!-- График (полная ширина) -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 300px;">
+                        <canvas id="dynamicMainChart"></canvas>
+                    </div>
+
+                    <!-- Боковая панель со списком проектов (полная ширина на мобиле) -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px;">
+                        <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; padding: 0 4px;">📊 Проекты</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px;" id="dynamicProjectsList">
+                            <!-- Projects list will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ВЫБОР ПРОЕКТА ДЛЯ ПОДРОБНОГО АНАЛИЗА ===== -->
+                <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; margin-bottom: 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">Подробный анализ проекта</div>
+                    <select id="dynamicProjectSelect" onchange="updateDynamicProjectDetails()" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
+                        <option value="">Выберите проект...</option>
+                    </select>
+                    <div id="dynamicProjectDetails" style="display: none; padding: 12px; background: var(--bg-secondary); border-radius: 10px;">
+                        <!-- Project details will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- ===== ТАБЛИЦА ДАННЫХ ===== -->
+                <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase;">Таблица данных</div>
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table id="dynamicDataTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="padding: 8px; text-align: left; font-weight: 800; color: var(--text-secondary);">Период</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">Доход</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">План</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary);">%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamicTableBody">
+                                <!-- Table rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- ===== РАЗДЕЛ АНАЛИЗ ТРЕНДА ===== -->
+            <div id="trend-view" style="display: none;">
+                <div style="padding: 12px; margin-top: 12px;">
+                    <div class="section-title">📈 Анализ тренда проектов</div>
+
+                    <!-- Выбор проекта и периода -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <select id="trendProjectSelect" onchange="updateTrendChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer;">
+                            <option value="">📋 Выберите проект...</option>
+                        </select>
+                        <select id="trendPeriodSelect" onchange="updateTrendChart()" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-weight: 600; cursor: pointer;">
+                            <option value="week">📅 Неделя</option>
+                            <option value="month" selected>📅 Месяц</option>
+                            <option value="quarter">📅 Квартал</option>
+                        </select>
+                    </div>
+
+                    <!-- Анализ тренда (KPI) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Текущий %</div>
+                            <div style="font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px;" id="trendCurrentValue">—</div>
+                            <div style="font-size: 10px; color: var(--text-muted);" id="trendCurrentDate">Дата</div>
+                        </div>
+                        <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Тренд</div>
+                            <div style="font-size: 24px; font-weight: 800; margin-bottom: 4px;" id="trendIndicator">—</div>
+                            <div style="font-size: 12px; font-weight: 700;" id="trendDescription">Нет данных</div>
+                        </div>
+                    </div>
+
+                    <!-- График тренда -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; height: 300px; margin-bottom: 14px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+
+                    <!-- Детальная таблица тренда -->
+                    <div style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden;">
+                        <div style="padding: 12px; border-bottom: 1px solid var(--border);">
+                            <div style="font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase;">📊 История изменений</div>
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border); background: var(--surface);">
+                                    <th style="padding: 8px; text-align: left; font-weight: 800; color: var(--text-secondary); font-size: 11px;">Период</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: 800; color: var(--text-secondary); font-size: 11px;">%</th>
+                                    <th style="padding: 8px; text-align: center; font-weight: 800; color: var(--text-secondary); font-size: 11px;">Изменение</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trendTableBody">
+                                <!-- Trend data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bonus-section" class="content-section">
+
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">🎁 Детально по бонусам</div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>KRKA</h4>
+                        <p>105% → 6,916,000 сум</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>Astra Zeneca</h4>
+                        <p>107% → 8,540,000 сум</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">✓</div>
+                    <div class="task-content">
+                        <h4>SENTISS</h4>
+                        <p>103% → 2,100,000 сум</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== PLAN SECTION ========== -->
+        <div id="plan-section" class="content-section">
+
+            <div style="padding: 12px; margin-top: 12px;">
+                <div class="section-title">📍 План работ</div>
+                <div class="task-item">
+                    <div class="task-icon">📞</div>
+                    <div class="task-content">
+                        <h4>Связаться с менеджером</h4>
+                        <p>Проверить статус текущих проектов</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">👥</div>
+                    <div class="task-content">
+                        <h4>Встреча с фармацевтами</h4>
+                        <p>14 аптек из сети TARGET PHARM</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">📦</div>
+                    <div class="task-content">
+                        <h4>Проверить выкладку</h4>
+                        <p>Убедиться в наличии товара</p>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">📋</div>
+                    <div class="task-content">
+                        <h4>Еженедельный контроль</h4>
+                        <p>Мониторинг выполнения планов</p>
+                    </div>
+                </div>
+                <div style="background: var(--bg-secondary); border-radius: var(--radius); padding: 16px; margin: 0 12px 12px 12px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">📞 Контакты:</div>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Жасур Пармонов</strong></div>
+                    <div style="font-size: 12px; color: var(--info); cursor: pointer;">↗️ https://t.me/FOM_Zohidjon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="footer-divider"></div>
+            <div>© 2026 DATFO Dashboard</div>
+            <div>Обновлено: сегодня 14:32</div>
+            <div>v3.0.0 - С поиском и фильтрами</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchSection('dashboard')">
+            <span style="font-size: 20px;">📊</span>
+            <span>Обзор</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('detail')">
+            <span style="font-size: 20px;">📋</span>
+            <span>Детально</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('dynamic')">
+            <span style="font-size: 20px;">📈</span>
+            <span>Графики</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('bonus')">
+            <span style="font-size: 20px;">🎁</span>
+            <span>Бонусы</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('plan')">
+            <span style="font-size: 20px;">📍</span>
+            <span>План</span>
+        </button>
+    </div>
+
+    <script>
+        // ========== PROJECT DATA ==========
+        const allProjects = [
+            { name: 'KRKA', fact: '98.8M', percent: 105, status: 'completed' },
+            { name: 'Astra Zeneca', fact: '122M', percent: 107, status: 'completed' },
+            { name: 'SENTISS', fact: '30M', percent: 103, status: 'completed' },
+            { name: 'Medexport', fact: '60.8M', percent: 86, status: 'partial' },
+            { name: 'SYNERGY', fact: '94.6M', percent: 65, status: 'partial' },
+            { name: 'ZOMMER', fact: '65.6M', percent: 66, status: 'partial' },
+            { name: 'Alpen Pharma', fact: '17M', percent: 60, status: 'partial' },
+            { name: 'CCL', fact: '29M', percent: 52, status: 'partial' },
+            { name: 'BIOMIND', fact: '17.2M', percent: 57, status: 'partial' },
+            { name: 'POLISORB', fact: '43.8M', percent: 50, status: 'partial' },
+            { name: 'SAFE', fact: '0M', percent: 0, status: 'critical' },
+            { name: 'SIRIUS', fact: '9.2M', percent: 27, status: 'critical' }
+        ];
+
+        let currentStatusFilter = 'all';
+        let currentPercentFilter = 0;
+
+        // ========== FILTER FUNCTIONS ==========
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+            
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${status}"]`).classList.add('active');
+            
+            filterProjects();
+        }
+
+        function updatePercentValue() {
+            const value = document.getElementById('percentFilter').value;
+            document.getElementById('percentValue').textContent = value + '%';
+        }
+
+        function filterProjects() {
+            const searchTerm = document.getElementById('projectSearch').value.toLowerCase();
+            const percentFilter = parseInt(document.getElementById('percentFilter').value);
+            currentPercentFilter = percentFilter;
+
+            let filtered = allProjects.filter(project => {
+                const matchesSearch = project.name.toLowerCase().includes(searchTerm);
+                const matchesStatus = currentStatusFilter === 'all' || project.status === currentStatusFilter;
+                const matchesPercent = project.percent >= percentFilter;
+                
+                return matchesSearch && matchesStatus && matchesPercent;
+            });
+
+            renderProjects(filtered);
+            updateResultsInfo(filtered);
+        }
+
+        function renderProjects(projects) {
+            const tbody = document.getElementById('projectsTableBody');
+            const noResults = document.getElementById('noResults');
+
+            if (projects.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            tbody.innerHTML = projects.map(project => {
+                let percentColor = 'var(--danger)';
+                if (project.percent >= 100) {
+                    percentColor = 'var(--success)';
+                } else if (project.percent >= 75) {
+                    percentColor = 'var(--warning)';
+                }
+
+                return `
+                    <tr onclick="showProjectProducts('${project.name}')" style="cursor: pointer; transition: background 0.2s;">
+                        <td>${project.name}</td>
+                        <td>${project.fact}</td>
+                        <td style="color: ${percentColor}; font-weight: 800; text-align: right;">${project.percent}%</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Add hover effect to rows
+            document.querySelectorAll('#projectsTableBody tr').forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = 'var(--bg-secondary)';
+                });
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+            });
+        }
+
+        // Show project products modal (Under Development)
+        function showProjectProducts(projectName) {
+            const modal = document.getElementById('fullscreenModal');
+            const body = document.getElementById('fullscreenBody');
+            const title = document.getElementById('fullscreenTitle');
+
+            title.textContent = projectName;
+
+            const html = `
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center;">
+                    <div style="padding: 40px 20px;">
+                        <div style="font-size: 64px; margin-bottom: 24px;">🚀</div>
+                        <h2 style="font-size: 28px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Сайт в разработке</h2>
+                        <p style="font-size: 16px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
+                            База данных товаров<br>проекта <strong>${projectName}</strong><br>будет добавлена в ближайшее время
+                        </p>
+                        <div style="margin-top: 32px;">
+                            <div style="font-size: 14px; color: var(--text-muted);">⏳ Скоро здесь появится полная информация о препаратах</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        function updateResultsInfo(filtered) {
+            const resultsDiv = document.getElementById('searchResults');
+            const total = allProjects.length;
+            const shown = filtered.length;
+
+            if (shown === total) {
+                resultsDiv.textContent = '';
+            } else {
+                resultsDiv.textContent = `Показано ${shown} из ${total} проектов`;
+                resultsDiv.classList.add('active');
+            }
+        }
+
+        // Initialize on detail section load
+        function initializeDetailSection() {
+            document.getElementById('projectSearch').value = '';
+            document.getElementById('percentFilter').value = '0';
+            updatePercentValue();
+            currentStatusFilter = 'all';
+            document.querySelector('[data-filter="all"]').classList.add('active');
+            filterProjects();
+        }
+
+        // ========== MODAL DATA ==========
+        const projectsData = {
+            completed: [
+                { name: 'KRKA', fact: '98.8M', plan: '95.8M', percent: 105 },
+                { name: 'Astra Zeneca', fact: '122M', plan: '115M', percent: 107 },
+                { name: 'SENTISS', fact: '30M', plan: '291M', percent: 103 }
+            ],
+            partial: [
+                { name: 'Medexport', fact: '60.8M', plan: '70.7M', percent: 86 },
+                { name: 'SYNERGY', fact: '94.6M', plan: '146M', percent: 65 },
+                { name: 'ZOMMER', fact: '65.6M', plan: '991M', percent: 66 },
+                { name: 'Alpen Pharma', fact: '17M', plan: '28.3M', percent: 60 },
+                { name: 'CCL', fact: '29M', plan: '56M', percent: 52 },
+                { name: 'BIOMIND', fact: '17.2M', plan: '30.2M', percent: 57 },
+                { name: 'POLISORB', fact: '43.8M', plan: '87.8M', percent: 50 }
+            ],
+            critical: [
+                { name: 'SAFE', fact: '0M', plan: '16.8M', percent: 0 },
+                { name: 'SIRIUS', fact: '9.2M', plan: '33.5M', percent: 27 }
+            ]
+        };
+
+        const statusLabels = {
+            completed: { title: '✅ Выполнено', icon: '✓' },
+            partial: { title: '⚠️ Частично', icon: '⏳' },
+            critical: { title: '🔴 Критично', icon: '❌' }
+        };
+
+        // ========== MODAL FUNCTIONS ==========
+        function showDetails(status) {
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+            const projects = projectsData[status];
+            const info = statusLabels[status];
+
+            title.textContent = info.title;
+
+            let html = '';
+            projects.forEach(project => {
+                const percentColor = project.percent >= 100 ? 'var(--success)' : 
+                                   project.percent >= 75 ? 'var(--warning)' : 'var(--danger)';
+                html += `
+                    <div style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text-primary);">${project.name}</h4>
+                            <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Факт: <strong>${project.fact}</strong> / План: <strong>${project.plan}</strong></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800; color: ${percentColor}; line-height: 1;">${project.percent}%</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeFullscreenModal();
+            });
+        }
+
+        function closeModal() {
+            closeFullscreenModal();
+        }
+
+        // ========== TELEGRAM INIT ==========
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            tg.setBackgroundColor('#f8fafc');
+        }
+
+        // ========== SECTION SWITCHING ==========
+        function switchSection(sectionName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const sectionId = `${sectionName}-section`;
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+
+                if (sectionName === 'detail') {
+                    initializeDetailSection();
+                }
+
+                if (sectionName === 'dynamic') {
+                    setTimeout(window.initDynamicOnOpen, 100);
+                }
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            // Найти ближайшую кнопку, даже если был клик на вложенный элемент
+            const clickedBtn = event.target.closest('.nav-btn');
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ========== CHARTS ==========
+        window.chartsInitialized = false;
+
+        function initCharts() {
+            if (window.chartsInitialized) return;
+            window.chartsInitialized = true;
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    filler: { propagate: true },
+                    legend: { display: false }
+                }
+            };
+
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Январь', 'Февраль', 'Март'],
+                    datasets: [{
+                        label: 'Доход (млн сум)',
+                        data: [2.1, 2.4, 2.8],
+                        backgroundColor: ['#10b981', '#059669', '#047857'],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#f1f5f9', drawBorder: false } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'],
+                    datasets: [{
+                        label: 'Доход (млн сум)',
+                        data: [1.8, 2.1, 2.4, 2.8, 3.1, 3.5, 3.8, 4.1, 3.9, 4.2, 4.5, 4.8],
+                        borderColor: '#1e7a34',
+                        backgroundColor: 'rgba(30, 122, 52, 0.05)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#1e7a34',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#f1f5f9', drawBorder: false } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+
+        // ===== DYNAMIC SECTION FUNCTIONS (Графики - ВАРИАНТ 3) =====
+        
+        const dynamicData = {
+            monthData: { labels: ['янв', 'фев', 'мар'], values: [2.1, 2.4, 2.8] },
+            quarterData: { labels: ['кв1', 'кв2', 'кв3', 'кв4'], values: [2.4, 2.5, 2.3, 2.2] },
+            yearData: { labels: ['2023', '2024', '2025', '2026'], values: [2.0, 2.1, 2.3, 2.4] },
+            projects: [
+                { name: 'KRKA', percent: 105, fact: '98.8M', status: 'completed' },
+                { name: 'Astra', percent: 107, fact: '122M', status: 'completed' },
+                { name: 'SENTISS', percent: 103, fact: '30M', status: 'completed' },
+                { name: 'Medexport', percent: 86, fact: '60.8M', status: 'partial' },
+                { name: 'SYNERGY', percent: 65, fact: '94.6M', status: 'partial' },
+                { name: 'SAFE', percent: 0, fact: '0M', status: 'critical' }
+            ]
+        };
+
+        let dynamicChart = null;
+        let dynamicCurrentPeriod = 'month';
+
+        function initDynamicSection() {
+            updateDynamicChart();
+            populateDynamicProjectsList();
+            populateDynamicProjectSelect();
+            renderDynamicTable();
+        }
+
+        function updateDynamicChart() {
+            dynamicCurrentPeriod = document.getElementById('dynamicPeriodSelect').value;
+            const data = dynamicData[dynamicCurrentPeriod + 'Data'];
+            
+            if (!data) return;
+
+            // Обновить KPI метрики
+            const avg = (data.values.reduce((a, b) => a + b) / data.values.length).toFixed(1);
+            const max = Math.max(...data.values);
+            const min = Math.min(...data.values);
+            const growth = (((max - min) / min) * 100).toFixed(0);
+
+            const avgEl = document.getElementById('dynamicAvg');
+            const maxEl = document.getElementById('dynamicMax');
+            const growthEl = document.getElementById('dynamicGrowth');
+
+            if (avgEl) avgEl.textContent = avg + 'M';
+            if (maxEl) maxEl.textContent = max + 'M';
+            if (growthEl) growthEl.textContent = '+' + growth + '%';
+
+            // Уничтожить старый график если существует
+            if (dynamicChart) {
+                try {
+                    dynamicChart.destroy();
+                } catch (e) {
+                    console.log('Chart destroy error:', e);
+                }
+                dynamicChart = null;
+            }
+
+            // Создать новый график
+            try {
+                const canvas = document.getElementById('dynamicMainChart');
+                if (!canvas) {
+                    console.log('Canvas element not found');
+                    return;
+                }
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.log('Canvas context not available');
+                    return;
+                }
+
+                dynamicChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Доход (млн сум)',
+                            data: data.values,
+                            borderColor: '#1e7a34',
+                            backgroundColor: 'rgba(30, 122, 52, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#1e7a34',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { 
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { weight: 'bold', size: 14 },
+                                bodyFont: { size: 12 }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { color: '#f1f5f9', drawBorder: false } 
+                            },
+                            x: { 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { display: false, drawBorder: false } 
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Chart creation error:', error);
+            }
+        }
+
+        function populateDynamicProjectsList() {
+            const list = document.getElementById('dynamicProjectsList');
+            list.innerHTML = dynamicData.projects.map(proj => {
+                let color = '#10b981';
+                let emoji = '✅';
+                if (proj.status === 'partial') {
+                    color = '#f59e0b';
+                    emoji = '⚠️';
+                } else if (proj.status === 'critical') {
+                    color = '#ef4444';
+                    emoji = '🔴';
+                }
+                return `
+                    <div style="
+                        background: linear-gradient(135deg, ${color}15 0%, ${color}05 100%);
+                        border: 1px solid ${color}30;
+                        border-radius: 10px;
+                        padding: 10px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='${color}'" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='${color}30'">
+                        <div style="font-size: 18px; margin-bottom: 4px;">${emoji}</div>
+                        <div style="font-weight: 700; color: #0f172a; font-size: 11px; margin-bottom: 4px; word-break: break-word;">${proj.name}</div>
+                        <div style="font-size: 14px; font-weight: 800; color: ${color};">${proj.percent}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function populateDynamicProjectSelect() {
+            const select = document.getElementById('dynamicProjectSelect');
+            select.innerHTML = '<option value="">Выберите проект...</option>' + 
+                dynamicData.projects.map(proj => `<option value="${proj.name}">${proj.name}</option>`).join('');
+        }
+
+        function updateDynamicProjectDetails() {
+            const select = document.getElementById('dynamicProjectSelect');
+            const projectName = select.value;
+            const detailsDiv = document.getElementById('dynamicProjectDetails');
+
+            if (!projectName) {
+                detailsDiv.style.display = 'none';
+                return;
+            }
+
+            const project = dynamicData.projects.find(p => p.name === projectName);
+            if (project) {
+                detailsDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Проект</div>
+                            <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${project.name}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Статус</div>
+                            <div style="font-size: 16px; font-weight: 800; color: ${project.percent >= 100 ? '#10b981' : '#f59e0b'};">${project.percent}%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Факт</div>
+                            <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${project.fact}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #475569; margin-bottom: 4px; font-weight: 600;">Статус</div>
+                            <div style="font-size: 13px; font-weight: 700; color: ${project.status === 'completed' ? '#10b981' : project.status === 'partial' ? '#f59e0b' : '#ef4444'};">
+                                ${project.status === 'completed' ? '✅ Выполнено' : project.status === 'partial' ? '⚠️ Частично' : '🔴 Критично'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                detailsDiv.style.display = 'block';
+            }
+        }
+
+        function renderDynamicTable() {
+            const tbody = document.getElementById('dynamicTableBody');
+            const period = dynamicCurrentPeriod;
+            const data = dynamicData[period + 'Data'];
+            
+            tbody.innerHTML = data.labels.map((label, idx) => {
+                const value = data.values[idx];
+                const percent = Math.round((value / 2.5) * 100);
+                return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 8px; color: #0f172a; font-weight: 600;">${label}</td>
+                        <td style="padding: 8px; text-align: right; color: #1e7a34; font-weight: 700;">${value}M</td>
+                        <td style="padding: 8px; text-align: right; color: #475569;">2.5M</td>
+                        <td style="padding: 8px; text-align: right; font-weight: 800; color: ${percent >= 95 ? '#10b981' : percent >= 80 ? '#f59e0b' : '#ef4444'};">${percent}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleDynamicComparison() {
+            try {
+                // Проверяем есть ли уже модальное окно
+                let modal = document.getElementById('dynamicComparisonModal');
+                if (modal) {
+                    modal.remove();
+                    document.body.style.overflow = '';  // 🔓 Разморозить скролл
+                    return;
+                }
+
+                // Создаем новое модальное окно
+                const modalHTML = `
+                    <div id="dynamicComparisonModal" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0,0,0,0.6);
+                        z-index: 9999;
+                        display: flex;
+                        align-items: flex-end;
+                        font-family: 'Inter', sans-serif;
+                    ">
+                        <div style="
+                            background: white;
+                            width: 100%;
+                            border-radius: 20px 20px 0 0;
+                            padding: 20px;
+                            max-height: 85vh;
+                            overflow-y: auto;
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="font-size: 18px; font-weight: 800;">🔄 Сравнение</div>
+                                <button onclick="document.getElementById('dynamicComparisonModal').remove(); document.body.style.overflow = '';" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 700;">✕</button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                                <div>
+                                    <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Проект 1</label>
+                                    <select id="compProj1" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer;">
+                                        <option value="">Выберите...</option>
+                                        ${dynamicData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Проект 2</label>
+                                    <select id="compProj2" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer;">
+                                        <option value="">Выберите...</option>
+                                        ${dynamicData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button onclick="window.performDynamicComparison()" style="width: 100%; padding: 12px; background: #1e7a34; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 12px;">
+                                📊 Сравнить проекты
+                            </button>
+
+                            <div id="comparisonResultsArea" style="display: none; background: #f8fafc; border-radius: 10px; padding: 14px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+                                <!-- Результаты -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // 🔒 Заморозить скролл фона
+                document.body.style.overflow = 'hidden';
+                
+                // Закрытие при клике на фон
+                document.getElementById('dynamicComparisonModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.remove();
+                        document.body.style.overflow = '';  // 🔓 Разморозить скролл
+                    }
+                });
+
+            } catch (error) {
+                console.error('Comparison error:', error);
+                alert('❌ Ошибка при открытии сравнения');
+            }
+        }
+
+        window.performDynamicComparison = function() {
+            try {
+                const p1 = document.getElementById('compProj1').value;
+                const p2 = document.getElementById('compProj2').value;
+
+                if (!p1 || !p2) {
+                    alert('⚠️ Выберите оба проекта');
+                    return;
+                }
+
+                if (p1 === p2) {
+                    alert('⚠️ Выберите разные проекты');
+                    return;
+                }
+
+                const proj1 = dynamicData.projects.find(p => p.name === p1);
+                const proj2 = dynamicData.projects.find(p => p.name === p2);
+
+                if (!proj1 || !proj2) {
+                    alert('❌ Проект не найден');
+                    return;
+                }
+
+                const diff = proj1.percent - proj2.percent;
+                const winner = diff > 0 ? proj1.name : proj2.name;
+                const absDiff = Math.abs(diff);
+
+                const color1 = proj1.percent >= 100 ? '#10b981' : proj1.percent >= 50 ? '#f59e0b' : '#ef4444';
+                const color2 = proj2.percent >= 100 ? '#10b981' : proj2.percent >= 50 ? '#f59e0b' : '#ef4444';
+
+                const html = `
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 10px;">Результаты</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${color1};">
+                                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px; font-size: 13px;">${proj1.name}</div>
+                                <div style="font-size: 22px; font-weight: 800; color: ${color1};">${proj1.percent}%</div>
+                                <div style="font-size: 10px; color: #475569; margin-top: 4px;">${proj1.fact}</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${color2};">
+                                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px; font-size: 13px;">${proj2.name}</div>
+                                <div style="font-size: 22px; font-weight: 800; color: ${color2};">${proj2.percent}%</div>
+                                <div style="font-size: 10px; color: #475569; margin-top: 4px;">${proj2.fact}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #1e7a34;">
+                        <div style="font-size: 11px; font-weight: 700; color: #1e7a34; text-transform: uppercase; margin-bottom: 6px;">🏆 Победитель</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">${winner}</div>
+                        <div style="font-size: 12px; color: #475569;">Впереди на <strong>${absDiff}%</strong></div>
+                    </div>
+                `;
+
+                document.getElementById('comparisonResultsArea').innerHTML = html;
+                document.getElementById('comparisonResultsArea').style.display = 'block';
+
+            } catch (error) {
+                console.error('Perform comparison error:', error);
+                alert('❌ Ошибка при сравнении');
+            }
+        };
+
+
+        // ===== ДАННЫЕ ТРЕНДА ДЛЯ ПРОЕКТОВ =====
+        const trendData = {
+            'KRKA': { week: [85, 88, 91, 95, 100, 103, 105], month: [90, 95, 100, 103, 105], quarter: [80, 90, 105] },
+            'Astra Zeneca': { week: [90, 94, 98, 102, 105, 106, 107], month: [92, 100, 105, 106, 107], quarter: [85, 100, 107] },
+            'SENTISS': { week: [95, 98, 100, 101, 102, 103, 103], month: [98, 100, 101, 102, 103], quarter: [95, 100, 103] },
+            'Medexport': { week: [78, 80, 82, 84, 85, 85, 86], month: [80, 82, 84, 85, 86], quarter: [75, 85, 86] },
+            'SYNERGY': { week: [58, 60, 61, 62, 63, 64, 65], month: [60, 62, 63, 64, 65], quarter: [55, 65, 65] },
+            'ZOMMER': { week: [62, 63, 64, 65, 65, 66, 66], month: [63, 64, 65, 65, 66], quarter: [60, 65, 66] },
+            'Alpen Pharma': { week: [55, 56, 57, 58, 59, 59, 60], month: [56, 57, 58, 59, 60], quarter: [50, 60, 60] },
+            'CCL': { week: [50, 50, 51, 51, 52, 52, 52], month: [50, 51, 51, 52, 52], quarter: [48, 52, 52] },
+            'BIOMIND': { week: [54, 55, 56, 56, 57, 57, 57], month: [55, 56, 56, 57, 57], quarter: [50, 57, 57] },
+            'POLISORB': { week: [48, 48, 49, 49, 50, 50, 50], month: [48, 49, 49, 50, 50], quarter: [45, 50, 50] },
+            'SAFE': { week: [0, 0, 0, 0, 0, 0, 0], month: [0, 0, 0, 0, 0], quarter: [0, 0, 0] },
+            'SIRIUS': { week: [25, 25, 26, 26, 27, 27, 27], month: [25, 26, 26, 27, 27], quarter: [20, 27, 27] }
+        };
+
+        let trendChart = null;
+        let trendCurrentPeriod = 'month';
+
+        // Переключение между вкладками
+        function switchDynamicTab(tab) {
+            const analyticsView = document.getElementById('analytics-view');
+            const trendView = document.getElementById('trend-view');
+            const tabAnalytics = document.getElementById('tab-analytics');
+            const tabTrend = document.getElementById('tab-trend');
+
+            if (tab === 'analytics') {
+                analyticsView.style.display = 'block';
+                trendView.style.display = 'none';
+                tabAnalytics.style.color = 'var(--primary)';
+                tabAnalytics.style.borderBottom = '3px solid var(--primary)';
+                tabTrend.style.color = 'var(--text-secondary)';
+                tabTrend.style.borderBottom = '3px solid transparent';
+                
+                // Очистить тренд при переключении
+                clearTrendData();
+            } else if (tab === 'trend') {
+                analyticsView.style.display = 'none';
+                trendView.style.display = 'block';
+                tabTrend.style.color = 'var(--primary)';
+                tabTrend.style.borderBottom = '3px solid var(--primary)';
+                tabAnalytics.style.color = 'var(--text-secondary)';
+                tabAnalytics.style.borderBottom = '3px solid transparent';
+                
+                // Инициализация тренда при открытии
+                setTimeout(() => {
+                    populateTrendProjectSelect();
+                    if (document.getElementById('trendProjectSelect').value) {
+                        updateTrendChart();
+                    }
+                }, 100);
+            }
+        }
+
+        // Очистить данные тренда (вернуть в начальное состояние)
+        function clearTrendData() {
+            try {
+                if (trendChart !== null) {
+                    trendChart.destroy();
+                    trendChart = null;
+                }
+                
+                document.getElementById('trendCurrentValue').textContent = '—';
+                document.getElementById('trendCurrentDate').textContent = 'Дата';
+                document.getElementById('trendIndicator').textContent = '—';
+                document.getElementById('trendDescription').textContent = 'Нет данных';
+                document.getElementById('trendTableBody').innerHTML = '';
+            } catch (e) {
+                console.error('Clear trend error:', e);
+            }
+        }
+
+        // Заполнить выборку проектов для тренда
+        function populateTrendProjectSelect() {
+            const select = document.getElementById('trendProjectSelect');
+            select.innerHTML = '<option value="">📋 Выберите проект...</option>';
+            
+            Object.keys(trendData).forEach(projectName => {
+                const option = document.createElement('option');
+                option.value = projectName;
+                option.textContent = projectName;
+                select.appendChild(option);
+            });
+        }
+
+        // Обновить график тренда
+        function updateTrendChart() {
+            try {
+                const projectName = document.getElementById('trendProjectSelect').value;
+                const period = document.getElementById('trendPeriodSelect').value;
+                trendCurrentPeriod = period;
+
+                if (!projectName) {
+                    clearTrendData();
+                    return;
+                }
+
+                const projectTrendData = trendData[projectName];
+                if (!projectTrendData) return;
+
+                const data = projectTrendData[period];
+                const periodLabels = {
+                    week: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    month: ['1 нед', '2 нед', '3 нед', '4 нед', 'Итог'],
+                    quarter: ['Месяц 1', 'Месяц 2', 'Месяц 3']
+                };
+
+                const labels = periodLabels[period];
+                const currentValue = data[data.length - 1];
+                const previousValue = data[0];
+                const change = currentValue - previousValue;
+                const percentChange = ((change / previousValue) * 100).toFixed(1);
+
+                // Обновить KPI
+                document.getElementById('trendCurrentValue').textContent = currentValue + '%';
+                document.getElementById('trendCurrentDate').textContent = labels[labels.length - 1];
+
+                // Определить тренд
+                let trendIcon, trendColor, trendText;
+                if (change > 10) {
+                    trendIcon = '⬆️';
+                    trendColor = 'var(--success)';
+                    trendText = `+${change}% (отличное развитие!)`;
+                } else if (change > 0) {
+                    trendIcon = '↗️';
+                    trendColor = 'var(--info)';
+                    trendText = `+${change}% (медленный рост)`;
+                } else if (change === 0) {
+                    trendIcon = '➡️';
+                    trendColor = 'var(--warning)';
+                    trendText = 'Стабильно (нет изменений)';
+                } else {
+                    trendIcon = '⬇️';
+                    trendColor = 'var(--danger)';
+                    trendText = `${change}% (падение!)`;
+                }
+
+                document.getElementById('trendIndicator').textContent = trendIcon;
+                document.getElementById('trendIndicator').style.color = trendColor;
+                document.getElementById('trendDescription').textContent = trendText;
+                document.getElementById('trendDescription').style.color = trendColor;
+
+                // Уничтожить старый график
+                if (trendChart !== null) {
+                    try {
+                        trendChart.destroy();
+                    } catch (e) {}
+                    trendChart = null;
+                }
+
+                // Создать новый график
+                const canvas = document.getElementById('trendChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+
+                const chartColor = change > 0 ? '#10b981' : change === 0 ? '#f59e0b' : '#ef4444';
+                
+                trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${projectName} (${period})`,
+                            data: data,
+                            borderColor: chartColor,
+                            backgroundColor: chartColor + '22',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: chartColor,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                padding: 12,
+                                titleFont: { size: 12, weight: 'bold' },
+                                bodyFont: { size: 11 },
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 110,
+                                ticks: { callback: function(value) { return value + '%'; } },
+                                grid: { color: 'rgba(200, 200, 200, 0.1)' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // Заполнить таблицу тренда
+                renderTrendTable(projectName, data, labels);
+
+            } catch (error) {
+                console.error('Trend chart error:', error);
+            }
+        }
+
+        // Заполнить таблицу истории тренда
+        function renderTrendTable(projectName, data, labels) {
+            const tbody = document.getElementById('trendTableBody');
+            tbody.innerHTML = '';
+
+            for (let i = 0; i < data.length; i++) {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid var(--border)';
+                
+                let change = '';
+                if (i > 0) {
+                    const diff = data[i] - data[i - 1];
+                    if (diff > 0) {
+                        change = `<span style="color: var(--success); font-weight: 700;">⬆️ +${diff}%</span>`;
+                    } else if (diff < 0) {
+                        change = `<span style="color: var(--danger); font-weight: 700;">⬇️ ${diff}%</span>`;
+                    } else {
+                        change = `<span style="color: var(--warning); font-weight: 700;">➡️ Нет</span>`;
+                    }
+                } else {
+                    change = `<span style="color: var(--text-muted);">—</span>`;
+                }
+
+                row.innerHTML = `
+                    <td style="padding: 10px 8px; font-weight: 700; color: var(--primary);">${labels[i]}</td>
+                    <td style="padding: 10px 8px; text-align: right; font-size: 13px; font-weight: 700;">${data[i]}%</td>
+                    <td style="padding: 10px 8px; text-align: center;">${change}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Инициализация при открытии раздела Графики
+        window.initDynamicOnOpen = function() {
+            try {
+                if (document.getElementById('dynamicMainChart')) {
+                    setTimeout(() => {
+                        populateDynamicProjectsList();
+                        populateDynamicProjectSelect();
+                        populateTrendProjectSelect();
+                        renderDynamicTable();
+                        updateDynamicChart();
+                    }, 200);
+                }
+            } catch (e) {
+                console.error('Dynamic section init error:', e);
+            }
+        };
+
+        // ========== FULLSCREEN MODAL FUNCTIONS ==========
+        
+        // Month details data
+        const monthDetails = {
+            january: {
+                title: '📅 Январь',
+                fact: '64.8M',
+                plan: '80.0M',
+                percent: 81,
+                status: 'warning',
+                statusText: 'Требуется ускорение',
+                trend: '-19.2M',
+                days: 31,
+                avgPerDay: '2.09M',
+                topProject: 'KRKA (12.5M)',
+                notes: 'Слабый старт квартала. Нужна активизация продаж.'
+            },
+            february: {
+                title: '📅 Февраль',
+                fact: '118.1M',
+                plan: '122.0M',
+                percent: 97,
+                status: 'success',
+                statusText: 'Хороший результат',
+                trend: '+53.3M',
+                days: 28,
+                avgPerDay: '4.22M',
+                topProject: 'Astra Zeneca (28.3M)',
+                notes: 'Месяц достигнут почти на полность. Отличные результаты по основным проектам.'
+            },
+            march: {
+                title: '📅 Март',
+                fact: '51.3M',
+                plan: '121.8M',
+                percent: 42,
+                status: 'danger',
+                statusText: 'Критическое положение',
+                trend: '-66.8M',
+                days: 24,
+                avgPerDay: '2.14M',
+                topProject: 'SENTISS (8.5M)',
+                notes: 'Срочное вмешательство требуется. Резкое падение показателей. Нужны меры по восстановлению.'
+            }
+        };
+
+        // Bonus details data
+        const bonusDetails = {
+            accrued: {
+                title: '⭐ Начислено',
+                icon: '⭐',
+                iconBg: 'rgba(245, 158, 11, 0.15)',
+                amount: '13.6M',
+                color: 'var(--warning)',
+                description: '3 проекта выполнены на 100% и более. Это означает, что вы превысили плановые показатели и получили вознаграждение.',
+                projects: [
+                    { name: 'KRKA', percent: 105, bonus: '6.92M' },
+                    { name: 'Astra Zeneca', percent: 107, bonus: '8.54M' },
+                    { name: 'SENTISS', percent: 103, bonus: '2.10M' }
+                ],
+                totalProjects: 3,
+                stats: [
+                    { label: 'Средний бонус', value: '4.53M' },
+                    { label: 'Лучший проект', value: 'Astra Zeneca' }
+                ]
+            },
+            potential: {
+                title: '📊 Потенциальный',
+                icon: '📊',
+                iconBg: 'rgba(59, 130, 246, 0.15)',
+                amount: '+ 43.3M',
+                color: 'var(--info)',
+                description: 'Сумма, которую вы можете получить дополнительно, если доведёте оставшиеся 9 проектов до плана. Это мотивирует работать интенсивнее.',
+                projects: [
+                    { name: 'Medexport', percent: 86, needed: '14%' },
+                    { name: 'SYNERGY', percent: 65, needed: '35%' },
+                    { name: 'ZOMMER', percent: 66, needed: '34%' },
+                    { name: 'Alpen Pharma', percent: 60, needed: '40%' },
+                    { name: 'CCL', percent: 52, needed: '48%' },
+                    { name: 'BIOMIND', percent: 57, needed: '43%' },
+                    { name: 'POLISORB', percent: 50, needed: '50%' },
+                    { name: 'SAFE', percent: 0, needed: '100%' },
+                    { name: 'SIRIUS', percent: 27, needed: '73%' }
+                ],
+                totalProjects: 9,
+                stats: [
+                    { label: 'Всего потенциал', value: '56.8M' },
+                    { label: 'Нужно ещё добавить', value: '+43.3M' }
+                ]
+            },
+            completed: {
+                title: '✓ Выполнено',
+                icon: '✓',
+                iconBg: 'rgba(16, 185, 129, 0.15)',
+                amount: '17.6M',
+                color: 'var(--success)',
+                description: 'Это бонусы, которые вы уже получили полностью. Эти проекты выполнены и деньги зачислены.',
+                projects: [
+                    { name: 'KRKA', status: '✅ Выплачено', amount: '6.92M' },
+                    { name: 'Astra Zeneca', status: '✅ Выплачено', amount: '8.54M' },
+                    { name: 'SENTISS', status: '✅ Выплачено', amount: '2.10M' }
+                ],
+                totalProjects: 3,
+                stats: [
+                    { label: 'Всего выплачено', value: '17.6M' },
+                    { label: 'Средний бонус', value: '5.87M' }
+                ]
+            }
+        };
+
+        function showMonthDetails(month) {
+            const data = monthDetails[month];
+            if (!data) return;
+
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = data.title;
+
+            let statusColor = data.status === 'success' ? '#10b981' : data.status === 'warning' ? '#f59e0b' : '#ef4444';
+            let statusIcon = data.status === 'success' ? '✅' : data.status === 'warning' ? '⚠️' : '🔴';
+
+            const html = `
+                <div class="month-detail-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 28px; line-height: 1;">${statusIcon}</div>
+                        <div>
+                            <div style="font-size: 12px; color: ${statusColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px;">Статус</div>
+                            <div style="font-size: 16px; font-weight: 800; color: ${statusColor};">${data.statusText}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Факт</div>
+                        <div class="month-detail-stat-value" style="color: var(--primary);">${data.fact}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">План</div>
+                        <div class="month-detail-stat-value">${data.plan}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-card">
+                    <div class="month-detail-title">📊 Выполнение плана</div>
+                    <div style="background: var(--surface); border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 700; color: var(--text-primary);">Процент</span>
+                            <span style="font-size: 24px; font-weight: 800; color: ${statusColor};">${data.percent}%</span>
+                        </div>
+                        <div class="progress-bar" style="height: 10px;">
+                            <div class="progress-fill" style="background: ${statusColor}; width: ${Math.min(data.percent, 100)}%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Отклонение</div>
+                        <div class="month-detail-stat-value" style="color: ${data.trend.includes('-') ? '#ef4444' : '#10b981'};">${data.trend}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Дней в месяце</div>
+                        <div class="month-detail-stat-value">${data.days}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-row">
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Средний в день</div>
+                        <div class="month-detail-stat-value" style="color: var(--info);">${data.avgPerDay}</div>
+                    </div>
+                    <div class="month-detail-stat">
+                        <div class="month-detail-stat-label">Топ проект</div>
+                        <div class="month-detail-stat-value" style="font-size: 14px; color: var(--primary);">${data.topProject}</div>
+                    </div>
+                </div>
+
+                <div class="month-detail-card">
+                    <div class="month-detail-title">📝 Заметки</div>
+                    <div style="font-size: 14px; line-height: 1.6; color: var(--text-secondary);">${data.notes}</div>
+                </div>
+
+                <div style="height: 12px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        function showBonusDetails(bonus) {
+            const data = bonusDetails[bonus];
+            if (!data) return;
+
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = data.title;
+
+            let html = `
+                <div class="bonus-detail-header">
+                    <div class="bonus-detail-icon" style="background: ${data.iconBg};">${data.icon}</div>
+                    <div class="bonus-detail-label">${data.title.replace(/^[🎁📊⭐✓]\s/, '')}</div>
+                    <div class="bonus-detail-amount" style="color: ${data.color};">${data.amount}</div>
+                    <div class="bonus-detail-desc">${data.description}</div>
+                </div>
+            `;
+
+            // Stats row
+            if (data.stats && data.stats.length > 0) {
+                html += '<div class="month-detail-row">';
+                data.stats.forEach(stat => {
+                    html += `
+                        <div class="month-detail-stat">
+                            <div class="month-detail-stat-label">${stat.label}</div>
+                            <div class="month-detail-stat-value" style="color: ${data.color}; font-size: 16px;">${stat.value}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Projects list
+            if (data.projects && data.projects.length > 0) {
+                html += `
+                    <div class="bonus-projects-list">
+                        <div class="bonus-projects-title">📋 ${data.totalProjects > 3 ? 'Все проекты' : 'Проекты'}</div>
+                `;
+                
+                data.projects.forEach(proj => {
+                    if (bonus === 'accrued' || bonus === 'completed') {
+                        html += `
+                            <div class="bonus-project-item">
+                                <div>
+                                    <div class="bonus-project-name">${proj.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">✅ ${proj.percent}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="bonus-project-percent" style="color: ${data.color};">${proj.bonus || proj.amount}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (bonus === 'potential') {
+                        html += `
+                            <div class="bonus-project-item">
+                                <div>
+                                    <div class="bonus-project-name">${proj.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">Текущий: ${proj.percent}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 12px; color: #f59e0b; font-weight: 700;">+${proj.needed}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += '</div>';
+            }
+
+            html += '<div style="height: 20px;"></div>';
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        function closeFullscreenModal() {
+            const modal = document.getElementById('fullscreenModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ========== PHARMACY INFO ==========
+        function showPharmacyInfo() {
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = 'Информация об аптеке';
+
+            const html = `
+                <div style="text-align: center; margin-bottom: 28px;">
+                    <div style="font-size: 14px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;">🏥 Аптека</div>
+                    <div style="font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.2;">
+                        "TARGET PHARM"<br>МСН
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">👤 Менеджер</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Жасур Пармонов</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Управление и координация работ аптеки</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">📊 Статистика</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--primary);">12</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Проектов</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--warning);">7</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">В процессе</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 800; color: var(--success);">3</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Выполнено</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px; margin-top: 28px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">📍 Расположение</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Город</div>
+                            <div style="color: var(--text-primary); font-weight: 700;">Ташкент</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Регион</div>
+                            <div style="color: var(--text-primary); font-weight: 700;">Узбекистан</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div style="color: var(--text-secondary); font-weight: 600;">ИНН</div>
+                            <div style="color: var(--primary); font-weight: 700; font-family: monospace;">305176332</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        // ========== INCOME DETAILS ==========
+        function showIncomeDetails() {
+            const modal = document.getElementById('fullscreenModal');
+            const title = document.getElementById('fullscreenTitle');
+            const body = document.getElementById('fullscreenBody');
+
+            title.textContent = 'Доход за квартал';
+
+            const html = `
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Итого за квартал</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 800; color: var(--warning);">7.0M</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">Сумм</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">По месяцам</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Январь</div>
+                            <div style="font-weight: 700;">2.16M <span style="font-size: 11px; color: var(--text-muted);">(31%)</span></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Февраль</div>
+                            <div style="font-weight: 700; color: var(--success);">3.93M <span style="font-size: 11px; color: var(--text-muted);">(56%)</span></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div style="color: var(--text-secondary); font-weight: 600;">Март</div>
+                            <div style="font-weight: 700; color: var(--danger);">0.91M <span style="font-size: 11px; color: var(--text-muted);">(13%)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Анализ</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600;">Среднее</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--info);">2.33M</div>
+                        </div>
+                        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600;">Максимум</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--success);">3.93M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Источник доходов</div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">KRKA</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">105% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">6.92M</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">Astra Zeneca</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">107% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">8.54M</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">SENTISS</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">103% выполнено</div>
+                            </div>
+                            <div style="font-weight: 800; color: var(--success);">2.10M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+            `;
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFullscreenModal();
+                }
+            });
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreenModal();
+            }
+        });
+
+        // Также вызываем при загрузке
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (document.getElementById('dynamicMainChart')) {
+                    window.initDynamicOnOpen();
+                }
+            }, 500);
+        });
+    </script>
+
+    <!-- ========== ONBOARDING TOUR ========== -->
+    <div class="tour-welcome" id="tourWelcome">
+        <div class="tour-welcome-card">
+            <div class="tour-welcome-emoji">👋</div>
+            <div class="tour-welcome-title">Добро пожаловать в DATFO!</div>
+            <div class="tour-welcome-text">Давайте быстро покажем, как пользоваться дашбордом. Это займёт меньше минуты.</div>
+            <div class="tour-welcome-buttons">
+                <button class="tour-btn tour-btn-skip" onclick="tourFinish()">Пропустить</button>
+                <button class="tour-btn tour-btn-next" onclick="tourStart()">Начать тур →</button>
+            </div>
+        </div>
+    </div>
+    <div class="tour-overlay" id="tourOverlay">
+        <div class="tour-spotlight" id="tourSpotlight"></div>
+        <div class="tour-tooltip" id="tourTooltip">
+            <div class="tour-tooltip-title" id="tourTitle"></div>
+            <div class="tour-tooltip-text" id="tourText"></div>
+            <div class="tour-tooltip-footer">
+                <div class="tour-progress" id="tourProgress"></div>
+                <div class="tour-buttons">
+                    <button class="tour-btn tour-btn-skip" onclick="tourFinish()">Пропустить</button>
+                    <button class="tour-btn tour-btn-prev" id="tourPrevBtn" onclick="tourPrev()">←</button>
+                    <button class="tour-btn tour-btn-next" id="tourNextBtn" onclick="tourNext()">Далее →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="tour-restart" onclick="tourShowWelcome()" title="Запустить обучение">❓</button>
+
+    <script>
+        const tourSteps = [
+            // ===== РАЗДЕЛ «ОБЗОР» =====
+            { section: 'dashboard', selector: '.header-logo',
+              title: 'Шапка приложения',
+              text: 'Логотип DATFO и индикатор актуальности. Зелёный 🟢 = данные свежие.' },
+            { section: 'dashboard', selector: '.pharmacy-card',
+              title: 'Информация об аптеке',
+              text: 'Название аптеки, город и ИНН. От этих данных зависит, какие проекты и бонусы вам показываются.' },
+            { section: 'dashboard', selector: '.income-block',
+              title: 'Доход за квартал',
+              text: 'Сумма заработанных бонусов по всем проектам за текущий квартал.' },
+            { section: 'dashboard', selector: '.stats-grid',
+              title: 'Статус проектов',
+              text: '✅ Выполнено (100%+), ⚠️ Частично (нужно ускориться), 🔴 Критично (вмешательство). Нажмите на цифру — увидите список.' },
+            { section: 'dashboard', selector: '.months-section',
+              title: 'Динамика по месяцам',
+              text: 'Факт vs план по каждому месяцу. Цвет полоски: зелёный = норма, жёлтый = риск, красный = провал.' },
+            { section: 'dashboard', selector: '.bonus-section',
+              title: 'Бонусы — кратко',
+              text: 'Сколько уже начислено, сколько ещё можно получить и какие проекты принесли деньги.' },
+
+            // ===== РАЗДЕЛ «ДЕТАЛЬНО» =====
+            { section: 'detail', selector: '#projectSearch',
+              title: 'Поиск проектов',
+              text: 'Найдите любой проект по названию: KRKA, Astra, SENTISS и т.д.' },
+            { section: 'detail', selector: '.filters-group',
+              title: 'Фильтры',
+              text: 'Фильтруйте по статусу (Все / Выполнено / Частично / Критично) и по минимальному % выполнения с помощью ползунка.' },
+            { section: 'detail', selector: '#projectsTable',
+              title: 'Таблица проектов',
+              text: 'Полный список: название, факт продаж и % выполнения плана. Обновляется при изменении фильтров.' },
+
+            // ===== РАЗДЕЛ «ГРАФИКИ» =====
+            { section: 'dynamic', selector: '#tab-analytics',
+              title: 'Вкладка «Аналитика»',
+              text: 'Здесь графики средних, максимумов и роста по всем проектам за выбранный период.' },
+            { section: 'dynamic', selector: '#tab-trend',
+              title: 'Вкладка «Анализ тренда»',
+              text: 'Выберите конкретный проект и посмотрите его тренд во времени — растёт, падает или стагнирует.' },
+
+            // ===== РАЗДЕЛ «БОНУСЫ» =====
+            { section: 'bonus', selector: '#bonus-section .task-item',
+              title: 'Детально по бонусам',
+              text: 'Каждый выполненный проект — отдельная строка с процентом выполнения и точной суммой бонуса в сумах.' },
+
+            // ===== РАЗДЕЛ «ПЛАН» =====
+            { section: 'plan', selector: '#plan-section .task-item',
+              title: 'План работ',
+              text: 'Список задач на квартал: звонки, встречи, проверки. Действуйте по этому плану — и проценты пойдут вверх.' },
+            { section: 'plan', selector: '#plan-section [style*="bg-secondary"]',
+              title: 'Контакты менеджера',
+              text: 'Если есть вопросы — пишите менеджеру в Telegram прямо отсюда.' },
+
+            // ===== ФИНАЛ =====
+            { section: 'dashboard', selector: '.bottom-nav',
+              title: 'Готово! 🎉',
+              text: 'Это нижняя навигация — переключайтесь между разделами в любое время. Чтобы пройти обучение заново — нажмите ❓ в правом нижнем углу.' }
+        ];
+
+        let tourIndex = 0;
+
+        function tourShowWelcome() {
+            document.getElementById('tourWelcome').classList.add('active');
+        }
+        function tourHideWelcome() {
+            document.getElementById('tourWelcome').classList.remove('active');
+        }
+        function tourStart() {
+            tourHideWelcome();
+            tourIndex = 0;
+            document.getElementById('tourOverlay').classList.add('active');
+            tourRender();
+        }
+        function tourFinish() {
+            tourHideWelcome();
+            document.getElementById('tourOverlay').classList.remove('active');
+            try { localStorage.setItem('datfo_tour_done', '1'); } catch (e) {}
+        }
+        function tourNext() {
+            if (tourIndex < tourSteps.length - 1) {
+                tourIndex++;
+                tourRender();
+            } else {
+                tourFinish();
+            }
+        }
+        function tourPrev() {
+            if (tourIndex > 0) {
+                tourIndex--;
+                tourRender();
+            }
+        }
+        function tourRender() {
+            const step = tourSteps[tourIndex];
+
+            if (step.section) {
+                const targetSection = document.getElementById(step.section + '-section');
+                if (targetSection && !targetSection.classList.contains('active')) {
+                    if (typeof switchSection === 'function') {
+                        switchSection(step.section);
+                        document.querySelectorAll('.bottom-nav .nav-btn').forEach(b => b.classList.remove('active'));
+                        const navMap = { dashboard: 0, detail: 1, dynamic: 2, bonus: 3, plan: 4 };
+                        const navBtns = document.querySelectorAll('.bottom-nav .nav-btn');
+                        if (navBtns[navMap[step.section]]) navBtns[navMap[step.section]].classList.add('active');
+                    } else {
+                        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                        targetSection.classList.add('active');
+                    }
+                }
+            }
+
+            const el = document.querySelector(step.selector);
+            if (!el) { tourNext(); return; }
+
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                const pad = 8;
+                const spotlight = document.getElementById('tourSpotlight');
+                spotlight.style.top = (rect.top - pad) + 'px';
+                spotlight.style.left = (rect.left - pad) + 'px';
+                spotlight.style.width = (rect.width + pad * 2) + 'px';
+                spotlight.style.height = (rect.height + pad * 2) + 'px';
+
+                document.getElementById('tourTitle').textContent = step.title;
+                document.getElementById('tourText').textContent = step.text;
+                document.getElementById('tourProgress').textContent = `ШАГ ${tourIndex + 1} ИЗ ${tourSteps.length}`;
+                document.getElementById('tourPrevBtn').style.visibility = tourIndex === 0 ? 'hidden' : 'visible';
+                document.getElementById('tourNextBtn').textContent = tourIndex === tourSteps.length - 1 ? 'Готово ✓' : 'Далее →';
+
+                const tooltip = document.getElementById('tourTooltip');
+                const tooltipH = tooltip.offsetHeight;
+                const tooltipW = tooltip.offsetWidth;
+                const vh = window.innerHeight;
+                const vw = window.innerWidth;
+
+                let top;
+                if (rect.bottom + tooltipH + 20 < vh) {
+                    top = rect.bottom + 14;
+                } else if (rect.top - tooltipH - 20 > 0) {
+                    top = rect.top - tooltipH - 14;
+                } else {
+                    top = Math.max(12, (vh - tooltipH) / 2);
+                }
+                let left = Math.max(12, Math.min(vw - tooltipW - 12, rect.left + rect.width / 2 - tooltipW / 2));
+                tooltip.style.top = top + 'px';
+                tooltip.style.left = left + 'px';
+            }, 350);
+        }
+
+        window.addEventListener('resize', () => {
+            if (document.getElementById('tourOverlay').classList.contains('active')) tourRender();
+        });
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    if (!localStorage.getItem('datfo_tour_done')) tourShowWelcome();
+                } catch (e) { tourShowWelcome(); }
+            }, 600);
+        });
+    </script>
+</body>
+</html>
