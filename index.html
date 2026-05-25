@@ -1729,7 +1729,7 @@
 
     <script>
         // ========== PROJECT DATA ==========
-        const allProjects = [
+        window.allProjects = [
             { name: 'KRKA', fact: '98.8M', percent: 105, status: 'completed' },
             { name: 'Astra Zeneca', fact: '122M', percent: 107, status: 'completed' },
             { name: 'SENTISS', fact: '30M', percent: 103, status: 'completed' },
@@ -1743,6 +1743,7 @@
             { name: 'SAFE', fact: '0M', percent: 0, status: 'critical' },
             { name: 'SIRIUS', fact: '9.2M', percent: 27, status: 'critical' }
         ];
+        const allProjects = window.allProjects;
 
         let currentStatusFilter = 'all';
         let currentPercentFilter = 0;
